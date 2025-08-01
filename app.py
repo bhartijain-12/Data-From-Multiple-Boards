@@ -145,7 +145,7 @@ API_KEY = os.getenv("MONDAY_API_KEY")
 BOARD_IDS = os.getenv("SOURCE_BOARD_IDS", "").split(",")
 TARGET_BOARD_ID = os.getenv("TARGET_BOARD_ID")
 TARGET_ITEM_ID = "2052340888"
-TARGET_COLUMN_ID = "text_mktde1vr"
+TARGET_COLUMN_ID = "text_mktdbqsy"
 
 API_URL = "https://api.monday.com/v2"
 HEADERS = {
