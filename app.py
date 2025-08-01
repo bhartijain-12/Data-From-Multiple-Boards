@@ -271,18 +271,23 @@ def handle_webhook_trigger():
 #     return {"status": "ok"}, 200
 
 @app.route("/webhook", methods=["POST"])
+# @app.route("/webhook", methods=["POST"])
 def webhook():
     payload = request.json
     print("📬 Webhook received")
     print("Headers:", json.dumps(dict(request.headers), indent=2))
     print("Body:", json.dumps(payload, indent=2))
 
-    # ✅ Step 1: Handle Monday's webhook verification challenge
+    # ✅ Handle Monday's webhook verification challenge
     if "challenge" in payload:
         print("✅ Responding to webhook challenge")
         return jsonify({"challenge": payload["challenge"]}), 200
 
-    # ⏬ Continue with your update logic...
+    # ✅ Run update logic in background thread
+    Thread(target=handle_webhook_trigger).start()
+
+    # ✅ Always return a valid response
+    return jsonify({"status": "ok"}), 200
 
 
 @app.route("/", methods=["GET"])
