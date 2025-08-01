@@ -192,7 +192,13 @@ def fetch_data_with_columns():
                 print(f"Error fetching board {board_id}:", data["errors"])
                 continue
 
-            board = data["data"]["boards"][0]
+            # board = data["data"]["boards"][0]
+            boards = data["data"].get("boards", [])
+            if not boards:
+                print(f"⚠️ No board found with ID: {board_id}")
+                continue
+            board = boards[0]
+
             board_name = board["name"]
             print(f"\nBoard: {board_name} (ID: {board_id})")
 
