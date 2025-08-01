@@ -261,14 +261,28 @@ def handle_webhook_trigger():
     update_target_item(structured_data)
 
 
+# @app.route("/webhook", methods=["POST"])
+# def webhook():
+#     payload = request.json
+#     print(" Webhook received:", json.dumps(payload, indent=2))
+
+#     # Run update logic in a background thread (non-blocking)
+#     Thread(target=handle_webhook_trigger).start()
+#     return {"status": "ok"}, 200
+
 @app.route("/webhook", methods=["POST"])
 def webhook():
     payload = request.json
-    print(" Webhook received:", json.dumps(payload, indent=2))
+    print("📬 Webhook received")
+    print("Headers:", json.dumps(dict(request.headers), indent=2))
+    print("Body:", json.dumps(payload, indent=2))
 
-    # Run update logic in a background thread (non-blocking)
-    Thread(target=handle_webhook_trigger).start()
-    return {"status": "ok"}, 200
+    # ✅ Step 1: Handle Monday's webhook verification challenge
+    if "challenge" in payload:
+        print("✅ Responding to webhook challenge")
+        return jsonify({"challenge": payload["challenge"]}), 200
+
+    # ⏬ Continue with your update logic...
 
 
 @app.route("/", methods=["GET"])
