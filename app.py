@@ -187,9 +187,10 @@ def fetch_data_with_columns():
             response = requests.post(API_URL, json={"query": query}, headers=HEADERS)
             response.raise_for_status()
             data = response.json()
-
+            print('data34---->,data)
+                
             if "errors" in data:
-                print(f"Error fetching board {board_id}:", data["errors"])
+                print(f"Error fetching board {board_id}:", data["errors"],flush=True)
                 continue
 
             # board = data["data"]["boards"][0]
@@ -200,7 +201,7 @@ def fetch_data_with_columns():
             board = boards[0]
 
             board_name = board["name"]
-            print(f"\nBoard: {board_name} (ID: {board_id})")
+            print(f"\nBoard: {board_name} (ID: {board_id})",flush=True)
 
             board_data = {
                 "board": board_name,
@@ -217,13 +218,13 @@ def fetch_data_with_columns():
                 for col in item["column_values"]:
                     item_info["columns"][col["id"]] = col["text"] or ""
 
-                print(f"  • {item_info['name']}")
+                print(f"  • {item_info['name']}",flush=True)
                 board_data["items"].append(item_info)
 
             all_data.append(board_data)
 
         except Exception as e:
-            print(f"Exception fetching board {board_id}: {e}")
+            print(f"Exception fetching board {board_id}: {e}",flush=True)
             continue
 
     return all_data
@@ -233,8 +234,8 @@ def update_target_item(data):
     json_text = json.dumps(data, ensure_ascii=False)
     escaped_json = json_text.replace('"', '\\"')
 
-    print("\nJSON to update:")
-    print(json_text)
+    print("\nJSON to update:",flush=True)
+    print(json_text,flush=True)
 
     mutation = f"""
     mutation {{
@@ -254,15 +255,15 @@ def update_target_item(data):
         data = response.json()
 
         if "errors" in data:
-            print("Failed to update item:", data["errors"])
+            print("Failed to update item:", data["errors"],flush=True)
         else:
-            print(f"Successfully updated item {TARGET_ITEM_ID}.")
+            print(f"Successfully updated item {TARGET_ITEM_ID}.",flush=True)
     except Exception as e:
-        print(" Exception during item update:", e)
+        print(" Exception during item update:", e,flush=True)
 
 
 def handle_webhook_trigger():
-    print(" Webhook triggered — Fetching & updating...")
+    print(" Webhook triggered — Fetching & updating...",flush=True)
     structured_data = fetch_data_with_columns()
     update_target_item(structured_data)
 
@@ -280,13 +281,13 @@ def handle_webhook_trigger():
 # @app.route("/webhook", methods=["POST"])
 def webhook():
     payload = request.json
-    print("📬 Webhook received")
-    print("Headers:", json.dumps(dict(request.headers), indent=2))
-    print("Body:", json.dumps(payload, indent=2))
+    print("📬 Webhook received",flush=True)
+    print("Headers:", json.dumps(dict(request.headers), indent=2),flush=True)
+    print("Body:", json.dumps(payload, indent=2),flush=True)
 
     # ✅ Handle Monday's webhook verification challenge
     if "challenge" in payload:
-        print("✅ Responding to webhook challenge")
+        print("✅ Responding to webhook challenge",flush=True)
         return jsonify({"challenge": payload["challenge"]}), 200
 
     # ✅ Run update logic in background thread
