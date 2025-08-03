@@ -14,7 +14,7 @@ TARGET_BOARD_ID = os.getenv("TARGET_BOARD_ID")
 TARGET_ITEM_ID = "2052800979"
 TARGET_COLUMN_ID = "file_mkteeyg6"
 
-API_URL = "https://api.monday.com/v2/file"
+API_URL = "https://api.monday.com/v2"
 HEADERS = {
     "Authorization": API_KEY,
     "Content-Type": "application/json"
