@@ -25,25 +25,29 @@ app = Flask(__name__)
 board_id_north = "2052330963"
 def fetch_board_data(board_id_north):
     print('inside this north america',flush=True)
-    query = f"""
-    query {{
-      boards(ids: {board_id_north}) {{
-        name
-        columns {{
-          id
-          title
-        }}
-        items {{
-          id
-          name
-          column_values {{
-            id
-            text
+   query = f"""
+        query {{
+          boards(ids: {board_id_north}) {{
+            name
+            columns {{
+              id
+              title
+            }}
+            items_page(limit: 100) {{
+              items {{
+                id
+                name
+                column_values {{
+                  id
+                  text
+                  value
+                  type
+                }}
+              }}
+            }}
           }}
         }}
-      }}
-    }}
-    """
+        """
 
     response = requests.post(API_URL, json={"query": query}, headers=HEADERS)
     response.raise_for_status()
