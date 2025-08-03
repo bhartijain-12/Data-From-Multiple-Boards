@@ -1,86 +1,302 @@
-import os, requests, json
+# import os
+# import json
+# import requests
+# from dotenv import load_dotenv
+
+# # Load environment variables
+# load_dotenv()
+
+# API_KEY = os.getenv("MONDAY_API_KEY")
+# BOARD_IDS = os.getenv("SOURCE_BOARD_IDS", "").split(",")
+# TARGET_BOARD_ID = os.getenv("TARGET_BOARD_ID")
+# TARGET_ITEM_ID = "2052340888"
+# TARGET_COLUMN_ID = "text_mktde1vr"
+
+# API_URL = "https://api.monday.com/v2"
+# HEADERS = {
+#     "Authorization": API_KEY,
+#     "Content-Type": "application/json"
+# }
+
+
+# def fetch_data_with_columns():
+#     """
+#     Fetch board name, item details, and column values from each board.
+#     Returns a structured list of boards with their items and columns.
+#     """
+#     all_data = []
+
+#     for board_id in BOARD_IDS:
+#         board_id = board_id.strip()
+#         query = f"""
+#         query {{
+#           boards(ids: {board_id}) {{
+#             name
+#             columns {{
+#               id
+#               title
+#             }}
+#             items_page(limit: 100) {{
+#               items {{
+#                 id
+#                 name
+#                 column_values {{
+#                   id
+#                   text
+#                   value
+#                   type
+#                 }}
+#               }}
+#             }}
+#           }}
+#         }}
+#         """
+#         try:
+#             response = requests.post(API_URL, json={"query": query}, headers=HEADERS)
+#             response.raise_for_status()
+#             data = response.json()
+
+#             if "errors" in data:
+#                 print(f"Error fetching board {board_id}:", data["errors"])
+#                 continue
+
+#             board = data["data"]["boards"][0]
+#             board_name = board["name"]
+#             print(f"\nBoard: {board_name} (ID: {board_id})")
+
+#             board_data = {
+#                 "board": board_name,
+#                 "items": []
+#             }
+
+#             for item in board["items_page"]["items"]:
+#                 item_info = {
+#                     "id": item["id"],
+#                     "name": item["name"],
+#                     "columns": {}
+#                 }
+
+#                 for col in item["column_values"]:
+#                     item_info["columns"][col["id"]] = col["text"] or ""
+
+#                 print(f"  • {item_info['name']}")
+#                 board_data["items"].append(item_info)
+
+#             all_data.append(board_data)
+
+#         except Exception as e:
+#             print(f"Exception fetching board {board_id}: {e}")
+#             continue
+
+#     return all_data
+
+
+# def update_target_item(data):
+#     """
+#     Update the target item with the structured JSON data.
+#     """
+#     json_text = json.dumps(data, ensure_ascii=False)
+#     escaped_json = json_text.replace('"', '\\"')
+
+#     print("\nJSON to update:")
+#     print(json_text)
+
+#     mutation = f"""
+#     mutation {{
+#       change_simple_column_value(
+#         board_id: {TARGET_BOARD_ID},
+#         item_id: {TARGET_ITEM_ID},
+#         column_id: "{TARGET_COLUMN_ID}",
+#         value: "{escaped_json}"
+#       ) {{
+#         id
+#       }}
+#     }}
+#     """
+#     try:
+#         response = requests.post(API_URL, json={"query": mutation}, headers=HEADERS)
+#         response.raise_for_status()
+#         data = response.json()
+
+#         if "errors" in data:
+#             print("Failed to update item:", data["errors"])
+#         else:
+#             print(f" Successfully updated item {TARGET_ITEM_ID}.")
+#     except Exception as e:
+#         print(" Exception during item update:", e)
+
+
+# if __name__ == "__main__":
+#     structured_data = fetch_data_with_columns()
+#     update_target_item(structured_data)
+
+
+import os
+import json
+import requests
 from dotenv import load_dotenv
-import pdfplumber  # pip install pdfplumber
+from flask import Flask, request ,jsonify
 from threading import Thread
 
+# Load environment variables
 load_dotenv()
-API_KEY           = os.getenv("MONDAY_API_KEY")
-BOARD_ID          = int(os.getenv("BOARD_ID"))
-ITEM_ID           = int(os.getenv("ITEM_ID"))
-COLUMN_FILE_ID    = os.getenv("COLUMN_FILE_ID")      # e.g. "file_column"
-COLUMN_TARGET_IDS = json.loads(os.getenv("TARGET_COLUMNS_JSON"))  
-# e.g.: {"order_id":"order_col", "units": "units_col", "price":"price_col", "feedback":"feedback_col"}
 
+API_KEY = os.getenv("MONDAY_API_KEY")
+BOARD_IDS = os.getenv("SOURCE_BOARD_IDS", "").split(",")
+TARGET_BOARD_ID = os.getenv("TARGET_BOARD_ID")
+TARGET_ITEM_ID = "2052800979"
+TARGET_COLUMN_ID = "file_mkteeyg6"
+
+API_URL = "https://api.monday.com/v2/file"
 HEADERS = {
     "Authorization": API_KEY,
     "Content-Type": "application/json"
 }
-GQL_ENDPOINT = "https://api.monday.com/v2"
 
-def get_pdf_public_url():
-    q = f"""
-    query {{
-      items(ids: {ITEM_ID}) {{
-        assets {{
-          id
-          public_url
-          name
+app = Flask(__name__)
+
+def fetch_data_with_columns():
+    all_data = []
+
+    for board_id in BOARD_IDS:
+        board_id = board_id.strip()
+        query = f"""
+        query {{
+          boards(ids: {board_id}) {{
+            name
+            columns {{
+              id
+              title
+            }}
+            items_page(limit: 100) {{
+              items {{
+                id
+                name
+                column_values {{
+                  id
+                  text
+                  value
+                  type
+                }}
+              }}
+            }}
+          }}
         }}
-      }}
-    }}
-    """
-    resp = requests.post(GQL_ENDPOINT, headers=HEADERS, json={"query": q})
-    resp.raise_for_status()
-    url = resp.json()["data"]["items"][0]["assets"][0]["public_url"]
-    return url
+        """
+        try:
+            response = requests.post(API_URL, json={"query": query}, headers=HEADERS)
+            response.raise_for_status()
+            data = response.json()
 
-def download_pdf(url: str) -> bytes:
-    resp = requests.get(url)
-    resp.raise_for_status()
-    return resp.content
+            if "errors" in data:
+                print(f"Error fetching board {board_id}:", data["errors"])
+                continue
 
-def extract_table(pdf_bytes: bytes):
-    rows = []
-    import io
-    pdf = io.BytesIO(pdf_bytes)
-    with pdfplumber.open(pdf) as doc:
-        for p in doc.pages:
-            tbls = p.extract_tables()
-            for t in tbls:
-                if len(t) <= 1: continue
-                header = t[0]
-                for row in t[1:]:
-                    rows.append(dict(zip(header, row)))
-    return rows
+            # board = data["data"]["boards"][0]
+            boards = data["data"].get("boards", [])
+            if not boards:
+                print(f"⚠️ No board found with ID: {board_id}")
+                continue
+            board = boards[0]
 
-def update_columns(rows):
-    col_updates = {}
-    # example: take first row and slice values into target columns
-    if rows:
-        rec = rows[0]
-        for target_k, col_id in COLUMN_TARGET_IDS.items():
-            val = rec.get(target_k, "")
-            col_updates[col_id] = str(val)
+            board_name = board["name"]
+            print(f"\nBoard: {board_name} (ID: {board_id})")
+
+            board_data = {
+                "board": board_name,
+                "items": []
+            }
+
+            for item in board["items_page"]["items"]:
+                item_info = {
+                    "id": item["id"],
+                    "name": item["name"],
+                    "columns": {}
+                }
+
+                for col in item["column_values"]:
+                    item_info["columns"][col["id"]] = col["text"] or ""
+
+                print(f"  • {item_info['name']}")
+                board_data["items"].append(item_info)
+
+            all_data.append(board_data)
+
+        except Exception as e:
+            print(f"Exception fetching board {board_id}: {e}")
+            continue
+
+    return all_data
+
+
+def update_target_item(data):
+    json_text = json.dumps(data, ensure_ascii=False)
+    escaped_json = json_text.replace('"', '\\"')
+
+    print("\nJSON to update:")
+    print(json_text)
+
     mutation = f"""
-    mutation ($vals: JSON!) {{
-      change_multiple_column_values(board_id: {BOARD_ID}, item_id:{ITEM_ID}, column_values: $vals) {{
+    mutation {{
+      change_simple_column_value(
+        board_id: {TARGET_BOARD_ID},
+        item_id: {TARGET_ITEM_ID},
+        column_id: "{TARGET_COLUMN_ID}",
+        value: "{escaped_json}"
+      ) {{
         id
       }}
     }}
     """
-    resp = requests.post(GQL_ENDPOINT, headers=HEADERS,
-                         json={"query":mutation, "variables":{"vals":col_updates}})
-    resp.raise_for_status()
+    try:
+        response = requests.post(API_URL, json={"query": mutation}, headers=HEADERS)
+        response.raise_for_status()
+        data = response.json()
 
-def run_workflow():
-    url = get_pdf_public_url()
-    content = download_pdf(url)
-    rows = extract_table(content)
-    if not rows:
-        print("❌ No table found in PDF.")
-        return
-    print("Extracted rows:", rows[:3])
-    update_columns(rows)
+        if "errors" in data:
+            print("Failed to update item:", data["errors"])
+        else:
+            print(f"Successfully updated item {TARGET_ITEM_ID}.")
+    except Exception as e:
+        print(" Exception during item update:", e)
 
-if __name__ == "__main__":
-    run_workflow()
+
+def handle_webhook_trigger():
+    print(" Webhook triggered — Fetching & updating...")
+    structured_data = fetch_data_with_columns()
+    update_target_item(structured_data)
+
+
+# @app.route("/webhook", methods=["POST"])
+# def webhook():
+#     payload = request.json
+#     print(" Webhook received:", json.dumps(payload, indent=2))
+
+#     # Run update logic in a background thread (non-blocking)
+#     Thread(target=handle_webhook_trigger).start()
+#     return {"status": "ok"}, 200
+
+@app.route("/webhook", methods=["POST"])
+# @app.route("/webhook", methods=["POST"])
+def webhook():
+    payload = request.json
+    print("📬 Webhook received")
+    print("Headers:", json.dumps(dict(request.headers), indent=2))
+    print("Body:", json.dumps(payload, indent=2))
+
+    # ✅ Handle Monday's webhook verification challenge
+    if "challenge" in payload:
+        print("✅ Responding to webhook challenge")
+        return jsonify({"challenge": payload["challenge"]}), 200
+
+    # ✅ Run update logic in background thread
+    Thread(target=handle_webhook_trigger).start()
+
+    # ✅ Always return a valid response
+    return jsonify({"status": "ok"}), 200
+
+
+@app.route("/", methods=["GET"])
+def health():
+    return " Webhook server is running!", 200
+
