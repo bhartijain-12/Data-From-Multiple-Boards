@@ -78,7 +78,7 @@ def fetch_monday_board_data(board_id, item_id, column_ids=None):
     
     url = "https://api.monday.com/v2"
     headers = {
-        "Authorization": api_key,
+        "Authorization": API_KEY,
         "Content-Type": "application/json"
     }
 
