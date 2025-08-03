@@ -14,6 +14,9 @@ BOARD_IDS = os.getenv("SOURCE_BOARD_IDS", "").split(",")
 TARGET_BOARD_ID = os.getenv("TARGET_BOARD_ID")
 TARGET_ITEM_ID = "2052301917"
 TARGET_COLUMN_ID = "text_mktd466v"
+board_id = 123456789  
+item_id = 2052855842
+columns = ['long_text_mktf36f7', 'long_text_mktf4sss']
 
 API_URL = "https://api.monday.com/v2"
 HEADERS = {
@@ -59,12 +62,58 @@ def fetch_board_data(board_id_north):
     board = data["data"]["boards"][0]
     print('board---->',board,flush=True)
 
+    fetch_monday_board_data(board_id,item_id,columns)
+
     file_path = create_pdf_with_json_content(board)
 
-    upload_file_to_supplier_manifest_column(2052340888,file_path,"file_mktf24g0")
+    # upload_file_to_supplier_manifest_column(2052340888,file_path,"file_mktf24g0")
     
     
     return board
+
+
+
+
+def fetch_monday_board_data(board_id, item_id, column_ids=None):
+    
+    url = "https://api.monday.com/v2"
+    headers = {
+        "Authorization": api_key,
+        "Content-Type": "application/json"
+    }
+
+    column_ids = column_ids or []
+    ptint('column ids --->',column_ids,flush=True)
+    column_id_string = ', '.join(f'"{cid}"' for cid in column_ids)
+    ptint('ccolumn_id_string --->',column_id_string,flush=True)
+
+    query = f"""
+    query {{
+        items(ids: {item_id}) {{
+            name
+            column_values(ids: [{column_id_string}]) {{
+                id
+                title
+                text
+            }}
+        }}
+    }}
+    """
+
+    response = requests.post(url, headers=headers, json={'query': query})
+    ptint('response0000000 --->',response,flush=True)
+    
+    if response.status_code == 200:
+        data = response.json()
+        print('data- insight--->',data,flush=True)
+        if "errors" in data:
+            print("GraphQL Errors:", data["errors"],flush=True)
+            return None
+        return data["data"]["items"][0]  # Only one item returned
+    else:
+        print(f"Request failed with status {response.status_code}: {response.text}",flush=True)
+        return None
+
 
 
 def upload_file_to_supplier_manifest_column(item_id, file_path, column_id):
