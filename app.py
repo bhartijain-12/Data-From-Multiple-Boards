@@ -22,6 +22,42 @@ HEADERS = {
 
 app = Flask(__name__)
 
+board_id_north = 2052330963
+def fetch_board_data(board_id_north):
+    print('inside this north america',flush=True)
+    query = f"""
+    query {{
+      boards(ids: {board_id_north}) {{
+        name
+        columns {{
+          id
+          title
+        }}
+        items {{
+          id
+          name
+          column_values {{
+            id
+            text
+          }}
+        }}
+      }}
+    }}
+    """
+
+    response = requests.post(API_URL, json={"query": query}, headers=HEADERS)
+    response.raise_for_status()
+    data = response.json()
+    print('data-north',data,flush=True)
+    
+    if "errors" in data:
+        raise Exception(f"Error from API: {data['errors']}")
+
+    board = data["data"]["boards"][0]
+    print('board---->',board,flush=True)
+    return board
+
+
 def fetch_data_with_columns():
     print('inside this column--->',flush=True)
     all_data = []
