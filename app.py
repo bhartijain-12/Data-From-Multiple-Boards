@@ -4,6 +4,7 @@ import requests
 from dotenv import load_dotenv
 from flask import Flask, request ,jsonify
 from threading import Thread
+from fpdf import FPDF
 
 # Load environment variables
 load_dotenv()
@@ -59,8 +60,29 @@ def fetch_board_data(board_id_north):
 
     board = data["data"]["boards"][0]
     print('board---->',board,flush=True)
+
+    create_pdf_with_json_content(board)
+    
+
+    
     return board
 
+
+def create_pdf_with_json_content(json_data, filename="output.pdf"):
+    print('inside create file',flush=True)
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Courier", size=10)
+
+    # Convert dict/list to pretty-printed JSON string
+    json_str = json.dumps(json_data, indent=4)
+
+    # Add line by line to the PDF
+    for line in json_str.split("\n"):
+        pdf.multi_cell(0, 5, line)
+
+    pdf.output(filename)
+    print(f"PDF saved: {filename}",flush=True)
 
 def fetch_data_with_columns():
     print('inside this column--->',flush=True)
