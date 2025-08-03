@@ -61,12 +61,65 @@ def fetch_board_data(board_id_north):
     board = data["data"]["boards"][0]
     print('board---->',board,flush=True)
 
-    create_pdf_with_json_content(board)
-    
+    file_path = create_pdf_with_json_content(board)
 
+    upload_file_to_supplier_manifest_column(2052340888,file_path,"file_mktf24g0")
+    
     
     return board
 
+
+def upload_file_to_supplier_manifest_column(item_id, file_path, column_id):
+    print('inside this upload column--->',flush=True)
+    url = "https://api.monday.com/v2/file"
+    headers = {
+        "Authorization": API_KEY,
+        "API-version": "2024-04"
+    }
+    
+    query = """
+    mutation add_file($file: File!, $itemId: ID!, $columnId: String!) {
+      add_file_to_column (item_id: $itemId, column_id: $columnId, file: $file) {
+        id
+      }
+    }
+    """
+
+    # Check file exists
+    if not os.path.exists(file_path):
+        print(f"File not found: {file_path}",flush=True)
+        return
+
+    # Prepare file upload map and variables
+    files = {
+        '1': (os.path.basename(file_path), open(file_path, 'rb'), 'application/pdf')
+    }
+
+    payload = {
+        "query": query,
+        "variables": json.dumps({
+            "file": None,
+            "itemId": str(item_id),
+            "columnId": column_id
+        }),
+        "map": json.dumps({
+            "1": ["variables.file"]
+        })
+    }
+
+    print("Uploading PDF...", flush=True)
+    response = requests.post(url, headers=headers, data=payload, files=files)
+
+    try:
+        resp_json = response.json()
+        print("Response-JSON:", json.dumps(resp_json, indent=2), flush=True)
+        if "errors" in resp_json:
+            print("GraphQL-Errors:", resp_json["errors"], flush=True)
+        else:
+            print("✅ PDF uploaded successfully.", flush=True)
+    except Exception as e:
+        print("❌ Failed to parse response:", str(e), flush=True)
+        print("Raw response:", response.text, flush=True)
 
 def create_pdf_with_json_content(json_data, filename="output.pdf"):
     print('inside create file',flush=True)
@@ -83,6 +136,7 @@ def create_pdf_with_json_content(json_data, filename="output.pdf"):
 
     pdf.output(filename)
     print(f"PDF saved: {filename}",flush=True)
+    return filename
 
 def fetch_data_with_columns():
     print('inside this column--->',flush=True)
