@@ -39,10 +39,8 @@ def fetch_board_data(board_id_north):
                 id
                 name
                 column_values {{
-                  id
                   text
                   value
-                  type
                 }}
               }}
             }}
