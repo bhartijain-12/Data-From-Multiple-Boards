@@ -83,9 +83,9 @@ def fetch_monday_board_data(board_id, item_id, column_ids=None):
     }
 
     column_ids = column_ids or []
-    ptint('column ids --->',column_ids,flush=True)
+    print('column ids --->',column_ids,flush=True)
     column_id_string = ', '.join(f'"{cid}"' for cid in column_ids)
-    ptint('ccolumn_id_string --->',column_id_string,flush=True)
+    print('ccolumn_id_string --->',column_id_string,flush=True)
 
     query = f"""
     query {{
@@ -101,7 +101,7 @@ def fetch_monday_board_data(board_id, item_id, column_ids=None):
     """
 
     response = requests.post(url, headers=headers, json={'query': query})
-    ptint('response0000000 --->',response,flush=True)
+    print('response0000000 --->',response,flush=True)
     
     if response.status_code == 200:
         data = response.json()
