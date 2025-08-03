@@ -187,7 +187,7 @@ def fetch_data_with_columns():
             response = requests.post(API_URL, json={"query": query}, headers=HEADERS)
             response.raise_for_status()
             data = response.json()
-            print('data34---->,data)
+            print('data34---->',data)
                 
             if "errors" in data:
                 print(f"Error fetching board {board_id}:", data["errors"],flush=True)
