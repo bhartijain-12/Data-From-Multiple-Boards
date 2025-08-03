@@ -168,7 +168,7 @@ def update_target_item(data):
 
 def handle_webhook_trigger():
     print(" Webhook triggered — Fetching & updating...",flush=True)
-    fetch_board_data()
+    fetch_board_data(board_id_north)
     structured_data = fetch_data_with_columns()
     update_target_item(structured_data)
 
