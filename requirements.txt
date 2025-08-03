@@ -3,3 +3,6 @@ requests
 python-dotenv
 gunicorn
 PyPDF2
+fpdf
+reportlab
+weasyprint
