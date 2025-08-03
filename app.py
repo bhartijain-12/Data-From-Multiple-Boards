@@ -90,7 +90,7 @@ def fetch_data_with_columns():
                 board_data["items"].append(item_info)
 
             all_data.append(board_data)
-        print('all_data',all_data,flush=True)
+            print('all_data',all_data,flush=True)
         except Exception as e:
             print(f"Exception fetching board {board_id}: {e}",flush=True)
             continue
