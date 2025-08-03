@@ -25,7 +25,7 @@ app = Flask(__name__)
 board_id_north = "2052330963"
 def fetch_board_data(board_id_north):
     print('inside this north america',flush=True)
-   query = f"""
+    query = f"""
         query {{
           boards(ids: {board_id_north}) {{
             name
