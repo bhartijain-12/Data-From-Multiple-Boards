@@ -84,73 +84,59 @@ def fetch_board_data(board_id_north):
     return board
 
 
+def extract_column_value(col):
+    print('inside this extract_column_value',flush=True)
+    if col.get('text'):
+        return col['text']  # best default for many types
+    if col.get('value'):
+        try:
+            parsed = json.loads(col['value'])
+            if isinstance(parsed, dict):
+                if 'email' in parsed:
+                    return parsed.get('email')
+                if 'name' in parsed:
+                    return parsed.get('name')
+                if 'title' in parsed:
+                    return parsed.get('title')
+                if 'personsAndTeams' in parsed:
+                    return ', '.join(p.get('name', '') for p in parsed['personsAndTeams'])
+                if 'files' in parsed:
+                    return ', '.join(f.get('name', '') for f in parsed['files'])
+                if 'date' in parsed:
+                    return parsed['date']
+                if 'changed_at' in parsed:
+                    return parsed['changed_at']
+            return parsed if isinstance(parsed, str) else json.dumps(parsed)
+        except Exception:
+            return col['value']  # fallback
+    return None
+
 def parse_monday_data(board):
     print('inside this parse monday data',flush=True)
     # board = json_data['data']['boards'][0]
 
-    # Debug: Print what columns look like
-    print("Board columns:",flush=True)
-    for col in board.get('columns', []):
-        print('col-->',col,flush=True)
-
-    # Safely create column ID to title map
-    column_map = {}
-    for col in board.get('columns', []):
-        col_id = col.get('id')
-        col_title = col.get('title')
-        if col_id and col_title:
-            column_map[col_id] = col_title
+    # Build column ID to title map
+    column_map = {col['id']: col['title'] for col in board['columns']}
 
     parsed_items = []
 
     for item in board['items_page']['items']:
-        item_data = {'Order_ID': item['name']}
+        item_data = {'Order_ID': item['name']}  # Use item name as order ID
 
-        values_by_id = {col.get('id'): col for col in item.get('column_values', []) if col.get('id')}
-
-        for col_id, col_title in column_map.items():
-            col_value = values_by_id.get(col_id, {}).get('text')
-            item_data[col_title] = col_value
+        # Map column values by ID
+        for col in item.get('column_values', []):
+            col_id = col.get('id')
+            col_title = column_map.get(col_id)
+            if col_title:
+                item_data[col_title] = extract_column_value(col)
 
         parsed_items.append(item_data)
-        print('parsed_items----->',parsed_items,flush=True)
+        print('parsed_items-->',parsed_items,flush=True)
+
     return parsed_items
 
 
-# def parse_monday_data(board):
-#     print('inside this parse monday data',flush=True)
-#     # board = json_data['data']['boards'][0]
 
-#     # Extract column ID to Title mapping
-#     column_map = {col['id']: col['title'] for col in board['columns']}
-
-#     parsed_items = []
-
-#     for item in board['items_page']['items']:
-#         item_data = {'Order_ID': item['name']}  # Using 'name' as Order ID
-
-#         for col_id, col_title in column_map.items():
-#             # Find the matching column value from item['column_values']
-#             matching_col = next(
-#                 (col for col in item['column_values'] if col.get('value') is not None and col.get('value') != 'null' and col_id in col.get('value', '')),
-#                 None
-#             )
-#             if not matching_col:
-#                 # Fall back to matching based on index in column_map if keys match up in order
-#                 index = list(column_map).index(col_id)
-#                 try:
-#                     col_value = item['column_values'][index].get('text') if index < len(item['column_values']) else None
-#                 except:
-#                     col_value = None
-#             else:
-#                 col_value = matching_col.get('text')
-
-#             item_data[col_title] = col_value
-
-#         parsed_items.append(item_data)
-#         print('parsed_items----->',parsed_items,flush=True)
-
-#     return parsed_items
 
 
 def fetch_monday_board_data(board_id, item_id, column_ids=None):
