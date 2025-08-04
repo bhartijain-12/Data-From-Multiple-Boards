@@ -87,6 +87,21 @@ def fetch_monday_board_data(board_id, item_id, column_ids=None):
     column_id_string = ', '.join(f'"{cid}"' for cid in column_ids)
     print('ccolumn_id_string --->',column_id_string,flush=True)
 
+    # query = f"""
+    # query {{
+    #     items(ids: {item_id}) {{
+    #         name
+    #         column_values(ids: {column_id_string}) {{
+    #             id
+    #             text
+    #             }}
+    #             column{{
+    #             title 
+    #         }}
+    #     }}
+    # }}
+    # """
+
     query = f"""
     query {{
         items(ids: {item_id}) {{
@@ -94,13 +109,14 @@ def fetch_monday_board_data(board_id, item_id, column_ids=None):
             column_values(ids: [{column_id_string}]) {{
                 id
                 text
+                column {{
+                    title 
                 }}
-                column{{
-                title 
             }}
         }}
     }}
-    """
+"""
+    
 
     response = requests.post(url, headers=headers, json={'query': query})
     print('response0000000 --->',response,flush=True)
