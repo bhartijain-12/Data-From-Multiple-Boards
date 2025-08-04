@@ -14,7 +14,7 @@ BOARD_IDS = os.getenv("SOURCE_BOARD_IDS", "").split(",")
 TARGET_BOARD_ID = os.getenv("TARGET_BOARD_ID")
 TARGET_ITEM_ID = "2052301917"
 TARGET_COLUMN_ID = "text_mktd466v"
-board_id = 123456789  
+board_id = 2052340887  
 item_id = 2052855842
 columns = ['long_text_mktf36f7', 'long_text_mktf4sss']
 
