@@ -83,9 +83,9 @@ def fetch_board_data(board_id_north):
     
     return board
 
-def parse_monday_data(json_data):
+def parse_monday_data(board):
     print('inside this parse monday data',flush=True)
-    board = json_data['data']['boards'][0]
+    # board = json_data['data']['boards'][0]
 
     # Extract column ID to Title mapping
     column_map = {col['id']: col['title'] for col in board['columns']}
