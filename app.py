@@ -27,6 +27,9 @@ HEADERS = {
 app = Flask(__name__)
 
 board_id_north = "2052330963"
+board_id = 2052340887  
+item_id = 2052855842
+columns = ['long_text_mktf36f7', 'long_text_mktf4sss']
 def fetch_board_data(board_id_north):
     print('inside this north america',flush=True)
     query = f"""
