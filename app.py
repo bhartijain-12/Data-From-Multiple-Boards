@@ -741,7 +741,7 @@ def upload_file_to_supplier_manifest_column(item_id, file_path, column_id):
 
 
 def create_pdf_from_json(json_data, filename="output.pdf"):
-    print('json_data------>',json_data.flush=True)
+    print('json_data------>',json_data,flush=True)
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=10)
     pdf.add_page()
@@ -749,7 +749,7 @@ def create_pdf_from_json(json_data, filename="output.pdf"):
 
     # One-line JSON string (not pretty printed)
     json_str = json.dumps(json_data)
-    print('json_str------>',json_str.flush=True)
+    print('json_str------>',json_str,flush=True)
     
     # Print entire JSON string as one line (like in the image)
     pdf.multi_cell(0, 5, json_str)
