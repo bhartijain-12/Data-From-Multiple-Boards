@@ -87,7 +87,7 @@ def fetch_board_data(board_id_north):
 
 def parse_monday_board_data(board_data):
     print('inside this parse monday data',flush=True)
-    print('board-data----->',board,flush=True)
+    print('board-data----->',board_data,flush=True)
     parsed_items = []
 
     # Mapping of desired output keys to Monday column IDs
