@@ -28,6 +28,10 @@ HEADERS = {
 
 app = Flask(__name__)
 
+board_id_north = "2052330963"
+board_id = 2052340887  
+item_id = 2052855842
+columns = ['long_text_mktf36f7', 'long_text_mktf4sss']
 
 json_data_asia = [ { "Order_ID": "ORD-25-A1B2C", "Lead_Creation_Date": 45566, "Close_Date": "15-02-2024", "Country": "India", "City": "Mumbai", 
 "Customer_ID": "CUST-4001", "Area": "Urban", "Customer Age": 45, "Customer_Segment": "B2B", "Lead Owner": "Priya Singh", 
@@ -536,10 +540,7 @@ Wijesinghe", "Manager": "Rohan Sharma", "Product_Name": "Smart Speaker", "SKU": 
 WBC-1080P", "Units_Sold": 1, "Price_Per_Unit ($)": 80, "Cost_Per_Unit ($)": 45, "Discount_Applied (%)": 0, "Total_Revenue ($)": 80, 
 "Sales_Channel": "In-Store", "NPS_Score (0-10)": 5, "Feedback_Summary": "The picture is very grainy in my home office. " } ]
 
-board_id_north = "2052330963"
-board_id = 2052340887  
-item_id = 2052855842
-columns = ['long_text_mktf36f7', 'long_text_mktf4sss']
+
 def fetch_board_data(board_id_north):
     print('inside this north america',flush=True)
     query = f"""
@@ -718,6 +719,8 @@ def upload_file_to_supplier_manifest_column(item_id, file_path, column_id):
 
 def create_pdf_with_json_content(json_data, filename="output.pdf"):
     print('Creating PDF with one-line JSON...', flush=True)
+    print('Creating PDF with asia data...',json_data, flush=True)
+    
 
     # Convert JSON to a compact string (no indent)
     json_str = json.dumps(json_data)
