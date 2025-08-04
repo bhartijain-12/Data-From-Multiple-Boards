@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from flask import Flask, request ,jsonify
 from threading import Thread
 from fpdf import FPDF
+import textwrap
 
 # Load environment variables
 load_dotenv()
@@ -33,7 +34,7 @@ board_id = 2052340887
 item_id = 2052855842
 columns = ['long_text_mktf36f7', 'long_text_mktf4sss']
 
-json_text = """[ { "Order_ID": "ORD-25-A1B2C", "Lead_Creation_Date": 45566, "Close_Date": "15-02-2024", "Country": "India", "City": "Mumbai", 
+json_text = = textwrap.dedent("""[ { "Order_ID": "ORD-25-A1B2C", "Lead_Creation_Date": 45566, "Close_Date": "15-02-2024", "Country": "India", "City": "Mumbai", 
 "Customer_ID": "CUST-4001", "Area": "Urban", "Customer Age": 45, "Customer_Segment": "B2B", "Lead Owner": "Priya Singh", 
 "Manager": "Rohan Sharma", "Product_Name": "4K Monitor", "SKU": "ELEC-MON-4K-27", "Units_Sold": 200, "Price_Per_Unit ($)": 450, 
 "Cost_Per_Unit ($)": 280, "Discount_Applied (%)": 20, "Total_Revenue ($)": 72000, "Sales_Channel": "Direct Sales", "NPS_Score (0-10)": 7, 
@@ -538,7 +539,7 @@ Wijesinghe", "Manager": "Rohan Sharma", "Product_Name": "Smart Speaker", "SKU": 
 "Close_Date": "16-05-2025", "Country": "Japan", "City": "Tokyo", "Customer_ID": "CUST-4002", "Area": "DownTown", "Customer Age": 43, 
 "Customer_Segment": "B2C", "Lead Owner": "Yuki Yamamoto", "Manager": "Ken Tanaka", "Product_Name": "Webcam", "SKU": "ELEC
 WBC-1080P", "Units_Sold": 1, "Price_Per_Unit ($)": 80, "Cost_Per_Unit ($)": 45, "Discount_Applied (%)": 0, "Total_Revenue ($)": 80, 
-"Sales_Channel": "In-Store", "NPS_Score (0-10)": 5, "Feedback_Summary": "The picture is very grainy in my home office. " } ]"""
+"Sales_Channel": "In-Store", "NPS_Score (0-10)": 5, "Feedback_Summary": "The picture is very grainy in my home office. " } ]""")
 
 json_data_asia = json.loads(json_text)
 
