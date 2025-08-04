@@ -46,7 +46,7 @@ def fetch_board_data(board_id_north):
               id
               title
             }}
-            items_page(limit: 10) {{
+            items_page(limit: 5) {{
               items {{
                 id
                 name
@@ -73,14 +73,50 @@ def fetch_board_data(board_id_north):
 
     fetch_monday_board_data(board_id,item_id,columns)
 
-    file_path = create_pdf_from_json(board)
+    parse_json = parse_monday_data(board)
+    print('parse_json',parse_json,flush=True)
 
-    upload_file_to_supplier_manifest_column(2052855846,file_path,"file_mktf24g0")
+    # file_path = create_pdf_from_json(board)
+
+    # upload_file_to_supplier_manifest_column(2052855846,file_path,"file_mktf24g0")
     
     
     return board
 
+def parse_monday_data(json_data):
+    print('inside this parse monday data',flush=True)
+    board = json_data['data']['boards'][0]
 
+    # Extract column ID to Title mapping
+    column_map = {col['id']: col['title'] for col in board['columns']}
+
+    parsed_items = []
+
+    for item in board['items_page']['items']:
+        item_data = {'Order_ID': item['name']}  # Using 'name' as Order ID
+
+        for col_id, col_title in column_map.items():
+            # Find the matching column value from item['column_values']
+            matching_col = next(
+                (col for col in item['column_values'] if col.get('value') is not None and col.get('value') != 'null' and col_id in col.get('value', '')),
+                None
+            )
+            if not matching_col:
+                # Fall back to matching based on index in column_map if keys match up in order
+                index = list(column_map).index(col_id)
+                try:
+                    col_value = item['column_values'][index].get('text') if index < len(item['column_values']) else None
+                except:
+                    col_value = None
+            else:
+                col_value = matching_col.get('text')
+
+            item_data[col_title] = col_value
+
+        parsed_items.append(item_data)
+        print('parsed_items----->',parsed_items,flush=True)
+
+    return parsed_items
 
 
 def fetch_monday_board_data(board_id, item_id, column_ids=None):
