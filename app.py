@@ -1,4 +1,3 @@
-My Code
 import os
 import json
 import requests
