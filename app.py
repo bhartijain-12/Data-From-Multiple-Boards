@@ -93,8 +93,10 @@ def fetch_monday_board_data(board_id, item_id, column_ids=None):
             name
             column_values(ids: [{column_id_string}]) {{
                 id
-                title
                 text
+                }}
+                column{{
+                title 
             }}
         }}
     }}
