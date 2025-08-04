@@ -88,25 +88,34 @@ def parse_monday_data(board):
     print('inside this parse monday data',flush=True)
     # board = json_data['data']['boards'][0]
 
-    # Create column ID to title mapping
-    column_map = {col['id']: col['title'] for col in board['columns']}
+    # Debug: Print what columns look like
+    print("Board columns:",flush=True)
+    for col in board.get('columns', []):
+        print('col-->'col,flush=True)
+
+    # Safely create column ID to title map
+    column_map = {}
+    for col in board.get('columns', []):
+        col_id = col.get('id')
+        col_title = col.get('title')
+        if col_id and col_title:
+            column_map[col_id] = col_title
 
     parsed_items = []
 
     for item in board['items_page']['items']:
-        item_data = {'Order_ID': item['name']}  # 'name' is used as the order ID
+        item_data = {'Order_ID': item['name']}
 
-        # Build a dictionary from column_values by id
-        values_by_id = {col['id']: col for col in item['column_values']}
+        values_by_id = {col.get('id'): col for col in item.get('column_values', []) if col.get('id')}
 
         for col_id, col_title in column_map.items():
-            col_value = values_by_id.get(col_id, {}).get('text', None)
+            col_value = values_by_id.get(col_id, {}).get('text')
             item_data[col_title] = col_value
 
         parsed_items.append(item_data)
         print('parsed_items----->',parsed_items,flush=True)
-
     return parsed_items
+
 
 # def parse_monday_data(board):
 #     print('inside this parse monday data',flush=True)
