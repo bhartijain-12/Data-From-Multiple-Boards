@@ -46,7 +46,7 @@ def fetch_board_data(board_id_north):
               id
               title
             }}
-            items_page(limit: 100) {{
+            items_page(limit: 5) {{
               items {{
                 id
                 name
@@ -113,6 +113,7 @@ def extract_column_value(col):
 
 def parse_monday_data(board):
     print('inside this parse monday data',flush=True)
+    print('board-data----->',board,flush=True)
     # board = json_data['data']['boards'][0]
 
     # Build column ID to title map
