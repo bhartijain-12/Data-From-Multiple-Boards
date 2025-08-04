@@ -580,7 +580,7 @@ def fetch_board_data(board_id_north):
 
     fetch_monday_board_data(board_id,item_id,columns)
 
-    file_path = create_pdf_with_json_content(json_data_asia)
+    file_path = create_pdf_from_json(json_data_asia)
 
     upload_file_to_supplier_manifest_column(2052855846,file_path,"file_mktf24g0")
     
