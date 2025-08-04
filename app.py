@@ -206,7 +206,7 @@ def upload_file_to_supplier_manifest_column(item_id, file_path, column_id):
 #     print(f"PDF saved: {filename}",flush=True)
 #     return filename
 
-def create_pdf_with_single_line_json(json_data, filename="output.pdf"):
+def create_pdf_with_json_content(json_data, filename="output.pdf"):
     print('Creating PDF with one-line JSON...', flush=True)
 
     # Convert JSON to a compact string (no indent)
@@ -221,7 +221,7 @@ def create_pdf_with_single_line_json(json_data, filename="output.pdf"):
     pdf.multi_cell(0, 5, json_str)
 
     pdf.output(filename)
-    print(f"✅ PDF saved as: {filename}", flush=True)
+    print(f"PDF saved as: {filename}", flush=True)
     return filename
 
 def fetch_data_with_columns():
