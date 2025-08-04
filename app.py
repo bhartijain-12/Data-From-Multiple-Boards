@@ -717,24 +717,43 @@ def upload_file_to_supplier_manifest_column(item_id, file_path, column_id):
 #     print(f"PDF saved: {filename}",flush=True)
 #     return filename
 
-def create_pdf_with_json_content(json_data, filename="output.pdf"):
-    print('Creating PDF with one-line JSON...', flush=True)
-    print('Creating PDF with asia data...',json_data, flush=True)
+# def create_pdf_with_json_content(json_data, filename="output.pdf"):
+#     print('Creating PDF with one-line JSON...', flush=True)
+#     print('Creating PDF with asia data...',json_data, flush=True)
     
 
-    # Convert JSON to a compact string (no indent)
-    json_str = json.dumps(json_data)
+#     # Convert JSON to a compact string (no indent)
+#     json_str = json.dumps(json_data)
 
+#     pdf = FPDF()
+#     pdf.set_auto_page_break(auto=True, margin=10)
+#     pdf.add_page()
+#     pdf.set_font("Courier", size=9)
+
+#     # Write the full JSON string (will wrap naturally)
+#     pdf.multi_cell(0, 5, json_str)
+
+#     pdf.output(filename)
+#     print(f"PDF saved as: {filename}", flush=True)
+#     return filename
+
+
+def create_pdf_from_json(json_data, filename="output.pdf"):
+    print('json_data------>',json_data.flush=True)
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=10)
     pdf.add_page()
-    pdf.set_font("Courier", size=9)
+    pdf.set_font("Courier", size=8)
 
-    # Write the full JSON string (will wrap naturally)
+    # One-line JSON string (not pretty printed)
+    json_str = json.dumps(json_data)
+    print('json_str------>',json_str.flush=True)
+    
+    # Print entire JSON string as one line (like in the image)
     pdf.multi_cell(0, 5, json_str)
 
     pdf.output(filename)
-    print(f"PDF saved as: {filename}", flush=True)
+    print(f"PDF saved to: {filename}", flush=True)
     return filename
 
 def fetch_data_with_columns():
