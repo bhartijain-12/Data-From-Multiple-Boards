@@ -91,7 +91,7 @@ def parse_monday_data(board):
     # Debug: Print what columns look like
     print("Board columns:",flush=True)
     for col in board.get('columns', []):
-        print('col-->'col,flush=True)
+        print('col-->',col,flush=True)
 
     # Safely create column ID to title map
     column_map = {}
