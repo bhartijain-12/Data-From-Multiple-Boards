@@ -83,40 +83,65 @@ def fetch_board_data(board_id_north):
     
     return board
 
+
 def parse_monday_data(board):
     print('inside this parse monday data',flush=True)
     # board = json_data['data']['boards'][0]
 
-    # Extract column ID to Title mapping
+    # Create column ID to title mapping
     column_map = {col['id']: col['title'] for col in board['columns']}
 
     parsed_items = []
 
     for item in board['items_page']['items']:
-        item_data = {'Order_ID': item['name']}  # Using 'name' as Order ID
+        item_data = {'Order_ID': item['name']}  # 'name' is used as the order ID
+
+        # Build a dictionary from column_values by id
+        values_by_id = {col['id']: col for col in item['column_values']}
 
         for col_id, col_title in column_map.items():
-            # Find the matching column value from item['column_values']
-            matching_col = next(
-                (col for col in item['column_values'] if col.get('value') is not None and col.get('value') != 'null' and col_id in col.get('value', '')),
-                None
-            )
-            if not matching_col:
-                # Fall back to matching based on index in column_map if keys match up in order
-                index = list(column_map).index(col_id)
-                try:
-                    col_value = item['column_values'][index].get('text') if index < len(item['column_values']) else None
-                except:
-                    col_value = None
-            else:
-                col_value = matching_col.get('text')
-
+            col_value = values_by_id.get(col_id, {}).get('text', None)
             item_data[col_title] = col_value
 
         parsed_items.append(item_data)
         print('parsed_items----->',parsed_items,flush=True)
 
     return parsed_items
+
+# def parse_monday_data(board):
+#     print('inside this parse monday data',flush=True)
+#     # board = json_data['data']['boards'][0]
+
+#     # Extract column ID to Title mapping
+#     column_map = {col['id']: col['title'] for col in board['columns']}
+
+#     parsed_items = []
+
+#     for item in board['items_page']['items']:
+#         item_data = {'Order_ID': item['name']}  # Using 'name' as Order ID
+
+#         for col_id, col_title in column_map.items():
+#             # Find the matching column value from item['column_values']
+#             matching_col = next(
+#                 (col for col in item['column_values'] if col.get('value') is not None and col.get('value') != 'null' and col_id in col.get('value', '')),
+#                 None
+#             )
+#             if not matching_col:
+#                 # Fall back to matching based on index in column_map if keys match up in order
+#                 index = list(column_map).index(col_id)
+#                 try:
+#                     col_value = item['column_values'][index].get('text') if index < len(item['column_values']) else None
+#                 except:
+#                     col_value = None
+#             else:
+#                 col_value = matching_col.get('text')
+
+#             item_data[col_title] = col_value
+
+#         parsed_items.append(item_data)
+#         print('parsed_items----->',parsed_items,flush=True)
+
+#     return parsed_items
 
 
 def fetch_monday_board_data(board_id, item_id, column_ids=None):
