@@ -34,7 +34,7 @@ board_id = 2052340887
 item_id = 2052855842
 columns = ['long_text_mktf36f7', 'long_text_mktf4sss']
 
-json_text = = textwrap.dedent("""[ { "Order_ID": "ORD-25-A1B2C", "Lead_Creation_Date": 45566, "Close_Date": "15-02-2024", "Country": "India", "City": "Mumbai", 
+json_text = textwrap.dedent("""[ { "Order_ID": "ORD-25-A1B2C", "Lead_Creation_Date": 45566, "Close_Date": "15-02-2024", "Country": "India", "City": "Mumbai", 
 "Customer_ID": "CUST-4001", "Area": "Urban", "Customer Age": 45, "Customer_Segment": "B2B", "Lead Owner": "Priya Singh", 
 "Manager": "Rohan Sharma", "Product_Name": "4K Monitor", "SKU": "ELEC-MON-4K-27", "Units_Sold": 200, "Price_Per_Unit ($)": 450, 
 "Cost_Per_Unit ($)": 280, "Discount_Applied (%)": 20, "Total_Revenue ($)": 72000, "Sales_Channel": "Direct Sales", "NPS_Score (0-10)": 7, 
