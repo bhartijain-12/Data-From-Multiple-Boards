@@ -76,9 +76,9 @@ def fetch_board_data(board_id_north):
     parse_json = parse_monday_data(board)
     print('parse_json',parse_json,flush=True)
 
-    # file_path = create_pdf_from_json(board)
+    file_path = create_pdf_from_json(parse_json)
 
-    # upload_file_to_supplier_manifest_column(2052855846,file_path,"file_mktf24g0")
+    upload_file_to_supplier_manifest_column(2052855846,file_path,"file_mktf24g0")
     
     
     return board
@@ -270,7 +270,7 @@ def upload_file_to_supplier_manifest_column(item_id, file_path, column_id):
 
 
 def create_pdf_from_json(json_data, filename="output.pdf"):
-    print('json_data------>',json_data,flush=True)
+    print('json_data_pdf----->',json_data,flush=True)
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=10)
     pdf.add_page()
