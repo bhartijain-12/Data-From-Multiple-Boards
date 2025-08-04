@@ -7,6 +7,7 @@ from threading import Thread
 from fpdf import FPDF
 import textwrap
 import re
+from datetime import datetime
 
 # Load environment variables
 load_dotenv()
@@ -73,7 +74,7 @@ def fetch_board_data(board_id_north):
 
     fetch_monday_board_data(board_id,item_id,columns)
 
-    parse_json = parse_monday_data(board)
+    parse_json = parse_monday_board_data(board)
     print('parse_json',parse_json,flush=True)
 
     file_path = create_pdf_from_json(parse_json)
@@ -84,61 +85,71 @@ def fetch_board_data(board_id_north):
     return board
 
 
-def extract_column_value(col):
-    print('inside this extract_column_value',flush=True)
-    if col.get('text'):
-        return col['text']  # best default for many types
-    if col.get('value'):
-        try:
-            parsed = json.loads(col['value'])
-            if isinstance(parsed, dict):
-                if 'email' in parsed:
-                    return parsed.get('email')
-                if 'name' in parsed:
-                    return parsed.get('name')
-                if 'title' in parsed:
-                    return parsed.get('title')
-                if 'personsAndTeams' in parsed:
-                    return ', '.join(p.get('name', '') for p in parsed['personsAndTeams'])
-                if 'files' in parsed:
-                    return ', '.join(f.get('name', '') for f in parsed['files'])
-                if 'date' in parsed:
-                    return parsed['date']
-                if 'changed_at' in parsed:
-                    return parsed['changed_at']
-            return parsed if isinstance(parsed, str) else json.dumps(parsed)
-        except Exception:
-            return col['value']  # fallback
-    return None
-
-def parse_monday_data(board):
+def parse_monday_board_data(board_data):
     print('inside this parse monday data',flush=True)
     print('board-data----->',board,flush=True)
-    # board = json_data['data']['boards'][0]
-
-    # Build column ID to title map
-    column_map = {col['id']: col['title'] for col in board['columns']}
-
     parsed_items = []
 
-    for item in board['items_page']['items']:
-        item_data = {'Order_ID': item['name']}  # Use item name as order ID
+    # Mapping of desired output keys to Monday column IDs
+    column_id_map = {
+        "Lead_Creation_Date": "date_mktearzs",
+        "Close_Date": "date_mktezc1y",
+        "Country": "text_mktebys0",
+        "City": "text_mktemekh",
+        "Customer_ID": "text_mkteca06",
+        "Customer_Segment": "text_mktenj5e",
+        "Lead Owner": "person",
+        "Manager": "multiple_person_mktenvjm",
+        "Product_Name": "text_mktexk7m",
+        "SKU": "text_mktekj0c",
+        "Units_Sold": "numeric_mkteyfx2",
+        "Price_Per_Unit ($)": "numeric_mktebsrg",
+        "Cost_Per_Unit ($)": "numeric_mktedry",
+        "Discount_Applied (%)": "numeric_mktezn44",
+        "Total_Revenue ($)": "numeric_mkteyhgs",
+        "Sales_Channel": "text_mkterm44",
+        "NPS_Score (0-10)": "text_mktefcba",
+        "Feedback_Summary": "text_mktevjd9"
+    }
 
-        # Map column values by ID
-        for col in item.get('column_values', []):
-            col_id = col.get('id')
-            col_title = column_map.get(col_id)
-            if col_title:
-                item_data[col_title] = extract_column_value(col)
+    for item in board_data["items_page"]["items"]:
+        item_data = {}
+        item_data["Order_ID"] = item["name"]
+
+        # Create a lookup for column values
+        column_values = {col['id']: col.get('text', None) for col in item['column_values']}
+
+        # Extract fields
+        for key, col_id in column_id_map.items():
+            value = column_values.get(col_id, None)
+
+            # Convert date fields
+            if key in ["Lead_Creation_Date", "Close_Date"] and value:
+                try:
+                    date_obj = datetime.strptime(value, "%Y-%m-%d")
+                    value = date_obj.strftime("%d-%m-%Y") if key == "Close_Date" else date_obj.toordinal()
+                except Exception:
+                    value = None
+
+            # Convert number fields
+            elif key in [
+                "Units_Sold", "Price_Per_Unit ($)", "Cost_Per_Unit ($)", "Discount_Applied (%)", "Total_Revenue ($)", "NPS_Score (0-10)"
+            ]:
+                try:
+                    value = float(value) if value else 0
+                except Exception:
+                    value = 0
+
+            item_data[key] = value
+
+        # You can customize 'Area' and 'Customer Age' here if logic is known
+        item_data["Area"] = "Urban"  # Placeholder value
+        item_data["Customer Age"] = 45  # Placeholder value
 
         parsed_items.append(item_data)
         print('parsed_items-->',parsed_items,flush=True)
 
     return parsed_items
-
-
-
-
 
 def fetch_monday_board_data(board_id, item_id, column_ids=None):
     
