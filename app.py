@@ -189,21 +189,39 @@ def upload_file_to_supplier_manifest_column(item_id, file_path, column_id):
         print("❌ Failed to parse response:", str(e), flush=True)
         print("Raw response:", response.text, flush=True)
 
-def create_pdf_with_json_content(json_data, filename="output.pdf"):
-    print('inside create file',flush=True)
+# def create_pdf_with_json_content(json_data, filename="output.pdf"):
+#     print('inside create file',flush=True)
+#     pdf = FPDF()
+#     pdf.add_page()
+#     pdf.set_font("Courier", size=10)
+
+#     # Convert dict/list to pretty-printed JSON string
+#     json_str = json.dumps(json_data, indent=4)
+
+#     # Add line by line to the PDF
+#     for line in json_str.split("\n"):
+#         pdf.multi_cell(0, 5, line)
+
+#     pdf.output(filename)
+#     print(f"PDF saved: {filename}",flush=True)
+#     return filename
+
+def create_pdf_with_single_line_json(json_data, filename="output.pdf"):
+    print('Creating PDF with one-line JSON...', flush=True)
+
+    # Convert JSON to a compact string (no indent)
+    json_str = json.dumps(json_data)
+
     pdf = FPDF()
+    pdf.set_auto_page_break(auto=True, margin=10)
     pdf.add_page()
-    pdf.set_font("Courier", size=10)
+    pdf.set_font("Courier", size=9)
 
-    # Convert dict/list to pretty-printed JSON string
-    json_str = json.dumps(json_data, indent=4)
-
-    # Add line by line to the PDF
-    for line in json_str.split("\n"):
-        pdf.multi_cell(0, 5, line)
+    # Write the full JSON string (will wrap naturally)
+    pdf.multi_cell(0, 5, json_str)
 
     pdf.output(filename)
-    print(f"PDF saved: {filename}",flush=True)
+    print(f"✅ PDF saved as: {filename}", flush=True)
     return filename
 
 def fetch_data_with_columns():
