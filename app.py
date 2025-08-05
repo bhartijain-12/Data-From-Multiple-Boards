@@ -88,76 +88,76 @@ def fetch_board_data(board_id_north):
     
     # return board
     return board
-# def parse_monday_board_data(board_data):
-#     print('inside this parse monday data',flush=True)
-#     print('board-data----->',board_data,flush=True)
-#     parsed_items = []
+def parse_monday_board_data(board_data):
+    print('inside this parse monday data',flush=True)
+    print('board-data----->',board_data,flush=True)
+    parsed_items = []
 
-#     # Map column titles to IDs for easier access
-#     column_id_map = {
-#         "Lead_Creation_Date": "date_mktearzs",  
-#         "Close_Date": "date_mktezc1y", 
-#         "Country": "text_mktebys0",
-#         "City": "text_mktemekh",
-#         "Customer_ID": "text_mkteca06",
-#         "Area": "text_mktg5jgn",
-#         "Age": "numeric_mktgk91w",
-#         "Customer_Segment": "text_mktenj5e",
-#         "Lead Owner": "person",
-#         "Manager": "multiple_person_mktenvjm",
-#         "Product_Name": "text_mktexk7m",
-#         "SKU": "text_mktekj0c",
-#         "Units_Sold": "numeric_mkteyfx2",
-#         "Price_Per_Unit ($)": "numeric_mktebsrg",
-#         "Cost_Per_Unit ($)": "numeric_mktedry",
-#         "Discount_Applied (%)": "numeric_mktezn44",
-#         "Total_Revenue ($)": "numeric_mkteyhgs",
-#         "Sales_Channel": "text_mkterm44",
-#         "NPS_Score (0-10)": "text_mktefcba",
-#         "Feedback_Summary": "text_mktevjd9"
-#     }
+    # Map column titles to IDs for easier access
+    column_id_map = {
+        "Lead_Creation_Date": "date_mktearzs",  
+        "Close_Date": "date_mktezc1y",
+        "Country": "text_mktebys0",
+        "City": "text_mktemekh",
+        "Customer_ID": "text_mkteca06",
+        "Area": "text_mktg5jgn",
+        "Age": "numeric_mktgk91w",
+        "Customer_Segment": "text_mktenj5e",
+        "Lead Owner": "person",
+        "Manager": "multiple_person_mktenvjm",
+        "Product_Name": "text_mktexk7m",
+        "SKU": "text_mktekj0c",
+        "Units_Sold": "numeric_mkteyfx2",
+        "Price_Per_Unit ($)": "numeric_mktebsrg",
+        "Cost_Per_Unit ($)": "numeric_mktedry",
+        "Discount_Applied (%)": "numeric_mktezn44",
+        "Total_Revenue ($)": "numeric_mkteyhgs",
+        "Sales_Channel": "text_mkterm44",
+        "NPS_Score (0-10)": "text_mktefcba",
+        "Feedback_Summary": "text_mktevjd9"
+    }
 
-#     # Get list of column IDs in order
-#     column_id_order = [col['id'] for col in board_data['columns']]
-#     print('column_id_order-->',column_id_order,flush=True)
+    # Get list of column IDs in order
+    column_id_order = [col['id'] for col in board_data['columns']]
+    print('column_id_order-->',column_id_order,flush=True)
 
-#     for item in board_data["items_page"]["items"]:
-#         item_data = {
-#             "Order_ID": item["name"]             # Placeholder
-#         }
+    for item in board_data["items_page"]["items"]:
+        item_data = {
+            "Order_ID": item["name"]             # Placeholder
+        }
 
-#         # Rebuild {column_id: text} for current item
-#         column_values_raw = item["column_values"]
-#         column_values = {
-#             column_id_order[i]: column_values_raw[i].get("text", None)
-#             for i in range(min(len(column_id_order), len(column_values_raw)))
-#         }
+        # Rebuild {column_id: text} for current item
+        column_values_raw = item["column_values"]
+        column_values = {
+            column_id_order[i]: column_values_raw[i].get("text", None)
+            for i in range(min(len(column_id_order), len(column_values_raw)))
+        }
 
-#         # Extract and format each required field
-#         for key, col_id in column_id_map.items():
-#             value = column_values.get(col_id, None)
+        # Extract and format each required field
+        for key, col_id in column_id_map.items():
+            value = column_values.get(col_id, None)
 
-#             if key in ["Lead_Creation_Date", "Close_Date"] and value:
-#                 try:
-#                     date_obj = datetime.strptime(value, "%Y-%m-%d")
-#                     value = date_obj.strftime("%d-%m-%Y") if key == "Close_Date" else date_obj.toordinal()
-#                 except Exception:
-#                     value = None
+            if key in ["Lead_Creation_Date", "Close_Date"] and value:
+                try:
+                    date_obj = datetime.strptime(value, "%Y-%m-%d")
+                    value = date_obj.strftime("%d-%m-%Y") if key == "Close_Date" else date_obj.toordinal()
+                except Exception:
+                    value = None
 
-#             elif key in [
-#                 "Units_Sold", "Price_Per_Unit ($)", "Cost_Per_Unit ($)", "Discount_Applied (%)",
-#                 "Total_Revenue ($)", "NPS_Score (0-10)"
-#             ]:
-#                 try:
-#                     value = float(value)
-#                 except:
-#                     value = 0
+            elif key in [
+                "Units_Sold", "Price_Per_Unit ($)", "Cost_Per_Unit ($)", "Discount_Applied (%)",
+                "Total_Revenue ($)", "NPS_Score (0-10)"
+            ]:
+                try:
+                    value = float(value)
+                except:
+                    value = 0
 
-#             item_data[key] = value
+            item_data[key] = value
 
-#         parsed_items.append(item_data)
-#         print('parsed_items-->',parsed_items,flush=True)
-#     return parsed_items
+        parsed_items.append(item_data)
+        print('parsed_items-->',parsed_items,flush=True)
+    return parsed_items
 
 # def parse_monday_board_data(board_data):
 #     print('inside this parse monday data',flush=True)
@@ -229,81 +229,81 @@ def fetch_board_data(board_id_north):
     
 #     return parsed_items
 
-def parse_monday_board_data(board_data):
-    print('inside this parse monday data',flush=True)
-    parsed_items = []
-    print(f'Total items to process: {len(board_data["items_page"]["items"])}', flush=True)
+# def parse_monday_board_data(board_data):
+#     print('inside this parse monday data',flush=True)
+#     parsed_items = []
+#     print(f'Total items to process: {len(board_data["items_page"]["items"])}', flush=True)
 
 
-    for item in board_data["items_page"]["items"]:
-        print(f'Processing item: {item["name"]} (ID: {item.get("id", "Unknown")})', flush=True)
+#     for item in board_data["items_page"]["items"]:
+#         print(f'Processing item: {item["name"]} (ID: {item.get("id", "Unknown")})', flush=True)
 
-        item_data = {"Order_ID": item["name"]}
+#         item_data = {"Order_ID": item["name"]}
 
-        # Create column_title to value mapping using the column info from each value
-        column_values = {}
-        for col_value in item["column_values"]:
-            if col_value.get("column") and col_value["column"].get("title"):
-                column_title = col_value["column"]["title"]
-                column_values[column_title] = col_value.get("text", None)
-            print(f'Raw column_values: {column_values}', flush=True)
+#         # Create column_title to value mapping using the column info from each value
+#         column_values = {}
+#         for col_value in item["column_values"]:
+#             if col_value.get("column") and col_value["column"].get("title"):
+#                 column_title = col_value["column"]["title"]
+#                 column_values[column_title] = col_value.get("text", None)
+#             print(f'Raw column_values: {column_values}', flush=True)
   
 
-        print(f'Available column values for item {item["name"]}: {list(column_values.keys())}', flush=True)
+#         print(f'Available column values for item {item["name"]}: {list(column_values.keys())}', flush=True)
 
-        # Your field mappings (update these to match actual Monday.com column titles)
-        field_mappings = {
-            "Lead_Creation_Date": "Lead_Creation_Date",
-            "Close_Date": "Close_Date", 
-            "Country": "Country",
-            "City": "City",
-            "Customer_ID": "Customer_ID",
-            "Area": "Area",
-            "Customer Age": "Customer Age",
-            "Customer_Segment": "Customer_Segment",
-            "Lead Owner": "Lead Owner",
-            "Manager": "Manager",
-            "Product_Name": "Product_Name",
-            "SKU": "SKU",
-            "Units_Sold": "Units_Sold",
-            "Price_Per_Unit ($)": "Price_Per_Unit ($)",
-            "Cost_Per_Unit ($)": "Cost_Per_Unit ($)",
-            "Discount_Applied (%)": "Discount_Applied (%)",
-            "Total_Revenue ($)": "Total_Revenue ($)",
-            "Sales_Channel": "Sales_Channel",
-            "NPS_Score (0-10)": "NPS_Score (0-10)",
-            "Feedback_Summary": "Feedback_Summary"
-        }
+#         # Your field mappings (update these to match actual Monday.com column titles)
+#         field_mappings = {
+#             "Lead_Creation_Date": "Lead_Creation_Date",
+#             "Close_Date": "Close_Date", 
+#             "Country": "Country",
+#             "City": "City",
+#             "Customer_ID": "Customer_ID",
+#             "Area": "Area",
+#             "Customer Age": "Customer Age",
+#             "Customer_Segment": "Customer_Segment",
+#             "Lead Owner": "Lead Owner",
+#             "Manager": "Manager",
+#             "Product_Name": "Product_Name",
+#             "SKU": "SKU",
+#             "Units_Sold": "Units_Sold",
+#             "Price_Per_Unit ($)": "Price_Per_Unit ($)",
+#             "Cost_Per_Unit ($)": "Cost_Per_Unit ($)",
+#             "Discount_Applied (%)": "Discount_Applied (%)",
+#             "Total_Revenue ($)": "Total_Revenue ($)",
+#             "Sales_Channel": "Sales_Channel",
+#             "NPS_Score (0-10)": "NPS_Score (0-10)",
+#             "Feedback_Summary": "Feedback_Summary"
+#         }
 
-        for output_key, column_title in field_mappings.items():
-            value = column_values.get(column_title, None)
-            print(f'Mapping {output_key} -> {column_title}: "{value}"', flush=True)
+#         for output_key, column_title in field_mappings.items():
+#             value = column_values.get(column_title, None)
+#             print(f'Mapping {output_key} -> {column_title}: "{value}"', flush=True)
 
             
-            if value is None:
-                print(f'⚠️ No value found for column "{column_title}"', flush=True)
+#             if value is None:
+#                 print(f'⚠️ No value found for column "{column_title}"', flush=True)
 
-            # Format dates and numbers as needed
-            if output_key in ["Lead_Creation_Date", "Close_Date"] and value:
-                try:
-                    date_obj = datetime.strptime(value, "%Y-%m-%d")
-                    value = date_obj.strftime("%d-%m-%Y") if output_key == "Close_Date" else date_obj.toordinal()
-                except:
-                    value = None
-            elif output_key in ["Units_Sold", "Price_Per_Unit ($)", "Cost_Per_Unit ($)", "Discount_Applied (%)", "Total_Revenue ($)", "NPS_Score (0-10)"]:
-                try:
-                    value = float(value) if value else 0
-                except:
-                    value = 0
-                print(f'Final value for {output_key}: {value}', flush=True)
+#             # Format dates and numbers as needed
+#             if output_key in ["Lead_Creation_Date", "Close_Date"] and value:
+#                 try:
+#                     date_obj = datetime.strptime(value, "%Y-%m-%d")
+#                     value = date_obj.strftime("%d-%m-%Y") if output_key == "Close_Date" else date_obj.toordinal()
+#                 except:
+#                     value = None
+#             elif output_key in ["Units_Sold", "Price_Per_Unit ($)", "Cost_Per_Unit ($)", "Discount_Applied (%)", "Total_Revenue ($)", "NPS_Score (0-10)"]:
+#                 try:
+#                     value = float(value) if value else 0
+#                 except:
+#                     value = 0
+#                 print(f'Final value for {output_key}: {value}', flush=True)
 
 
-            item_data[output_key] = value
-            print(f'Complete item_data: {item_data}', flush=True)
+#             item_data[output_key] = value
+#             print(f'Complete item_data: {item_data}', flush=True)
 
-        parsed_items.append(item_data)
+#         parsed_items.append(item_data)
     
-    return parsed_items
+#     return parsed_items
 
 
 
