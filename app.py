@@ -81,14 +81,8 @@ def fetch_board_data(board_id_north):
 
     upload_file_to_supplier_manifest_column(2052855846,file_path,"file_mktf24g0")
     
-    
-<<<<<<< HEAD
     # return board
-=======
->>>>>>> aebc96386a0a170fd03b41a8a5c003db2571c4ee
     return board
-
-
 def parse_monday_board_data(board_data):
     print('inside this parse monday data',flush=True)
     print('board-data----->',board_data,flush=True)
