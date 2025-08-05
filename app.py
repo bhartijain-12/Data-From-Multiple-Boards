@@ -129,10 +129,15 @@ def parse_monday_board_data(board_data):
 
         # Rebuild {column_id: text} for current item
         column_values_raw = item["column_values"]
+        # column_values = {
+        #     column_id_order[i]: column_values_raw[i].get("text", None)
+        #     for i in range(min(len(column_id_order), len(column_values_raw)))
+        # }
         column_values = {
-            column_id_order[i]: column_values_raw[i].get("text", None)
-            for i in range(min(len(column_id_order), len(column_values_raw)))
+            col_val["id"]: col_val.get("text", None)
+            for col_val in column_values_raw
         }
+
 
         # Extract and format each required field
         for key, col_id in column_id_map.items():
