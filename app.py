@@ -177,27 +177,29 @@ def parse_monday_board_data(board_data):
 
         # Map to your desired output format using column titles
         field_mappings = {
-            "Lead_Creation_Date": "Lead Creation Date",  # Use actual column titles
-            "Close_Date": "Close Date", 
+            "Lead_Creation_Date": "Lead_Creation_Date",  # Use actual column titles
+            "Close_Date": "Close_Date", 
             "Country": "Country",
             "City": "City",
-            "Customer_ID": "Customer ID",
+            "Customer_ID": "Customer_ID",
             "Area": "Area",
             "Customer Age": "Customer Age",  # Note: was "Age" 
-            "Customer_Segment": "Customer Segment",
+            "Customer_Segment": "Customer_Segment",
             "Lead Owner": "Lead Owner",
             "Manager": "Manager",
-            "Product_Name": "Product Name",
+            "Product_Name": "Product_Name",
             "SKU": "SKU",
-            "Units_Sold": "Units Sold",
-            "Price_Per_Unit ($)": "Price Per Unit ($)",
-            "Cost_Per_Unit ($)": "Cost Per Unit ($)",
-            "Discount_Applied (%)": "Discount Applied (%)",
-            "Total_Revenue ($)": "Total Revenue ($)",
-            "Sales_Channel": "Sales Channel",
-            "NPS_Score (0-10)": "NPS Score (0-10)",
-            "Feedback_Summary": "Feedback Summary"
+            "Units_Sold": "Units_Sold",
+            "Price_Per_Unit ($)": "Price_Per_Unit ($)",
+            "Cost_Per_Unit ($)": "Cost_Per_Unit ($)",
+            "Discount_Applied (%)": "Discount_Applied (%)",
+            "Total_Revenue ($)": "Total_Revenue ($)",
+            "Sales_Channel": "Sales_Channel",
+            "NPS_Score (0-10)": "NPS_Score (0-10)",
+            "Feedback_Summary": "Feedback_Summary"
         }
+
+
 
         for output_key, column_title in field_mappings.items():
             col_id = column_title_to_id.get(column_title)
