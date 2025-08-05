@@ -51,9 +51,14 @@ def fetch_board_data(board_id_north):
               items {{
                 id
                 name
-                column_values {{
-                  text
-                  value
+               column_values {{
+                                id
+                                column {{
+                                    title
+                                    type
+                                }}
+                                text
+                                value
                 }}
               }}
             }}
@@ -154,36 +159,101 @@ def fetch_board_data(board_id_north):
 #         print('parsed_items-->',parsed_items,flush=True)
 #     return parsed_items
 
+# def parse_monday_board_data(board_data):
+#     print('inside this parse monday data',flush=True)
+#     parsed_items = []
+
+#     # Create column title to ID mapping from the board data
+#     column_title_to_id = {}
+#     for col in board_data['columns']:
+#         column_title_to_id[col['title']] = col['id']
+    
+#     print('Available columns:', column_title_to_id, flush=True)
+
+#     for item in board_data["items_page"]["items"]:
+#         item_data = {"Order_ID": item["name"]}
+
+#         # Create column_id to value mapping
+#         column_values = {}
+#         for i, col_value in enumerate(item["column_values"]):
+#             if i < len(board_data['columns']):
+#                 col_id = board_data['columns'][i]['id']
+#                 column_values[col_id] = col_value.get("text", None)
+
+#         # Map to your desired output format using column titles
+#         field_mappings = {
+#             "Lead_Creation_Date": "Lead_Creation_Date",  # Use actual column titles
+#             "Close_Date": "Close_Date", 
+#             "Country": "Country",
+#             "City": "City",
+#             "Customer_ID": "Customer_ID",
+#             "Area": "Area",
+#             "Customer Age": "Customer Age",  # Note: was "Age" 
+#             "Customer_Segment": "Customer_Segment",
+#             "Lead Owner": "Lead Owner",
+#             "Manager": "Manager",
+#             "Product_Name": "Product_Name",
+#             "SKU": "SKU",
+#             "Units_Sold": "Units_Sold",
+#             "Price_Per_Unit ($)": "Price_Per_Unit ($)",
+#             "Cost_Per_Unit ($)": "Cost_Per_Unit ($)",
+#             "Discount_Applied (%)": "Discount_Applied (%)",
+#             "Total_Revenue ($)": "Total_Revenue ($)",
+#             "Sales_Channel": "Sales_Channel",
+#             "NPS_Score (0-10)": "NPS_Score (0-10)",
+#             "Feedback_Summary": "Feedback_Summary"
+#         }
+
+
+
+#         for output_key, column_title in field_mappings.items():
+#             col_id = column_title_to_id.get(column_title)
+#             value = column_values.get(col_id, None) if col_id else None
+
+#             # Format dates and numbers as needed
+#             if output_key in ["Lead_Creation_Date", "Close_Date"] and value:
+#                 try:
+#                     date_obj = datetime.strptime(value, "%Y-%m-%d")
+#                     value = date_obj.strftime("%d-%m-%Y") if output_key == "Close_Date" else date_obj.toordinal()
+#                 except:
+#                     value = None
+#             elif output_key in ["Units_Sold", "Price_Per_Unit ($)", "Cost_Per_Unit ($)", "Discount_Applied (%)", "Total_Revenue ($)", "NPS_Score (0-10)"]:
+#                 try:
+#                     value = float(value) if value else 0
+#                 except:
+#                     value = 0
+
+#             item_data[output_key] = value
+
+#         parsed_items.append(item_data)
+    
+#     return parsed_items
+
 def parse_monday_board_data(board_data):
     print('inside this parse monday data',flush=True)
     parsed_items = []
 
-    # Create column title to ID mapping from the board data
-    column_title_to_id = {}
-    for col in board_data['columns']:
-        column_title_to_id[col['title']] = col['id']
-    
-    print('Available columns:', column_title_to_id, flush=True)
-
     for item in board_data["items_page"]["items"]:
         item_data = {"Order_ID": item["name"]}
 
-        # Create column_id to value mapping
+        # Create column_title to value mapping using the column info from each value
         column_values = {}
-        for i, col_value in enumerate(item["column_values"]):
-            if i < len(board_data['columns']):
-                col_id = board_data['columns'][i]['id']
-                column_values[col_id] = col_value.get("text", None)
+        for col_value in item["column_values"]:
+            if col_value.get("column") and col_value["column"].get("title"):
+                column_title = col_value["column"]["title"]
+                column_values[column_title] = col_value.get("text", None)
 
-        # Map to your desired output format using column titles
+        print(f'Available column values for item {item["name"]}: {list(column_values.keys())}', flush=True)
+
+        # Your field mappings (update these to match actual Monday.com column titles)
         field_mappings = {
-            "Lead_Creation_Date": "Lead_Creation_Date",  # Use actual column titles
+            "Lead_Creation_Date": "Lead_Creation_Date",
             "Close_Date": "Close_Date", 
             "Country": "Country",
             "City": "City",
             "Customer_ID": "Customer_ID",
             "Area": "Area",
-            "Customer Age": "Customer Age",  # Note: was "Age" 
+            "Customer Age": "Customer Age",
             "Customer_Segment": "Customer_Segment",
             "Lead Owner": "Lead Owner",
             "Manager": "Manager",
@@ -199,11 +269,11 @@ def parse_monday_board_data(board_data):
             "Feedback_Summary": "Feedback_Summary"
         }
 
-
-
         for output_key, column_title in field_mappings.items():
-            col_id = column_title_to_id.get(column_title)
-            value = column_values.get(col_id, None) if col_id else None
+            value = column_values.get(column_title, None)
+            
+            if value is None:
+                print(f'⚠️ No value found for column "{column_title}"', flush=True)
 
             # Format dates and numbers as needed
             if output_key in ["Lead_Creation_Date", "Close_Date"] and value:
@@ -223,6 +293,7 @@ def parse_monday_board_data(board_data):
         parsed_items.append(item_data)
     
     return parsed_items
+
 
 
 def fetch_monday_board_data(board_id, item_id, column_ids=None):
