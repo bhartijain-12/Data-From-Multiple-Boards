@@ -87,10 +87,10 @@ def fetch_board_data(board_id_north):
 
 def parse_monday_board_data(board_data):
     print('inside this parse monday data',flush=True)
-    print('board-data----->',board_data,flush=True)
+    print('board-data----->',board,flush=True)
     parsed_items = []
 
-    # Mapping of desired output keys to Monday column IDs
+    # Map column titles to IDs for easier access
     column_id_map = {
         "Lead_Creation_Date": "date_mktearzs",
         "Close_Date": "date_mktezc1y",
@@ -112,18 +112,28 @@ def parse_monday_board_data(board_data):
         "Feedback_Summary": "text_mktevjd9"
     }
 
+    # Get list of column IDs in order
+    column_id_order = [col['id'] for col in board_data['columns']]
+    print('column_id_order-->',column_id_order,flush=True)
+
     for item in board_data["items_page"]["items"]:
-        item_data = {}
-        item_data["Order_ID"] = item["name"]
+        item_data = {
+            "Order_ID": item["name"],
+            "Area": "Urban",               # You can modify this logic later
+            "Customer Age": 45             # Placeholder
+        }
 
-        # Create a lookup for column values
-        column_values = {col['id']: col.get('text', None) for col in item['column_values']}
+        # Rebuild {column_id: text} for current item
+        column_values_raw = item["column_values"]
+        column_values = {
+            column_id_order[i]: column_values_raw[i].get("text", None)
+            for i in range(min(len(column_id_order), len(column_values_raw)))
+        }
 
-        # Extract fields
+        # Extract and format each required field
         for key, col_id in column_id_map.items():
             value = column_values.get(col_id, None)
 
-            # Convert date fields
             if key in ["Lead_Creation_Date", "Close_Date"] and value:
                 try:
                     date_obj = datetime.strptime(value, "%Y-%m-%d")
@@ -131,24 +141,19 @@ def parse_monday_board_data(board_data):
                 except Exception:
                     value = None
 
-            # Convert number fields
             elif key in [
-                "Units_Sold", "Price_Per_Unit ($)", "Cost_Per_Unit ($)", "Discount_Applied (%)", "Total_Revenue ($)", "NPS_Score (0-10)"
+                "Units_Sold", "Price_Per_Unit ($)", "Cost_Per_Unit ($)", "Discount_Applied (%)",
+                "Total_Revenue ($)", "NPS_Score (0-10)"
             ]:
                 try:
-                    value = float(value) if value else 0
-                except Exception:
+                    value = float(value)
+                except:
                     value = 0
 
             item_data[key] = value
 
-        # You can customize 'Area' and 'Customer Age' here if logic is known
-        item_data["Area"] = "Urban"  # Placeholder value
-        item_data["Customer Age"] = 45  # Placeholder value
-
         parsed_items.append(item_data)
         print('parsed_items-->',parsed_items,flush=True)
-
     return parsed_items
 
 def fetch_monday_board_data(board_id, item_id, column_ids=None):
