@@ -89,90 +89,138 @@ def fetch_board_data(board_id_north):
     
     # return board
     return board
+# def parse_monday_board_data(board_data):
+#     print('inside this parse monday data',flush=True)
+#     print('board-data----->',board_data,flush=True)
+#     parsed_items = []
+
+#     # Map column titles to IDs for easier access
+#     column_id_map = {
+#         "Lead_Creation_Date": "date_mktearzs",  
+#         "Close_Date": "date_mktezc1y",
+#         "Country": "text_mktebys0",
+#         "City": "text_mktemekh",
+#         "Customer Id": "text_mkteca06",
+#         "Area Type": "text_mktf4v1k",
+#         "Customer Age": "numeric_mktff5gw",
+#         "Customer_Segment": "text_mktenj5e",
+#         "Lead Owner": "person",
+#         "Manager": "multiple_person_mktenvjm",
+#         "Product_Name": "text_mktexk7m",
+#         "SKU": "text_mktekj0c",
+#         "Units_Sold": "numeric_mkteyfx2",
+#         "Price_Per_Unit ($)": "numeric_mktebsrg",
+#         "Cost_Per_Unit ($)": "numeric_mktedry",
+#         "Discount_Applied (%)": "numeric_mktezn44",
+#         "Total_Revenue ($)": "numeric_mkteyhgs",
+#         "Sales Channel": "text_mkterm44",
+#         "Lead Score": "text_mktefcba",
+#         "Feedback_Summary": "text_mktevjd9"
+#     }
+
+#     # Get list of column IDs in order
+#     column_id_order = [col['id'] for col in board_data['columns']]
+#     print('column_id_order-->',column_id_order,flush=True)
+
+#     for item in board_data["items_page"]["items"]:
+#         item_data = {
+#             "Order_ID": item["name"]             # Placeholder
+#         }
+
+#         # Rebuild {column_id: text} for current item
+#         column_values_raw = item["column_values"]
+#         # column_values = {
+#         #     column_id_order[i]: column_values_raw[i].get("text", None)
+#         #     for i in range(min(len(column_id_order), len(column_values_raw)))
+#         # }
+#         column_values = {
+#             col_val["id"]: col_val.get("text", None)
+#             for col_val in column_values_raw
+#         }
+
+
+#         # Extract and format each required field
+#         for key, col_id in column_id_map.items():
+#             value = column_values.get(col_id, None)
+
+#             # if key in ["Lead_Creation_Date", "Close_Date"] and value:
+#             #     try:
+#             #         date_obj = datetime.strptime(value, "%Y-%m-%d")
+#             #         value = date_obj.strftime("%d-%m-%Y") if key == "Close_Date" else date_obj.toordinal()
+#             #     except Exception:
+#             #         value = None
+#             if key in ["Lead_Creation_Date", "Close_Date"] and value:
+#                 try:
+#                     value = value.strip('"')  # ← remove any surrounding quotes
+#                     date_obj = datetime.strptime(value, "%Y-%m-%d")
+#                     value = date_obj.strftime("%d-%m-%Y") if key == "Close_Date" else date_obj.toordinal()
+#                 except Exception as e:
+#                     print(f"Date parsing failed for key: {key}, value: {value}, error: {e}", flush=True)
+#                     value = None
+
+
+#             elif key in [
+#                 "Units_Sold", "Price_Per_Unit ($)", "Cost_Per_Unit ($)", "Discount_Applied (%)",
+#                 "Total_Revenue ($)", "NPS_Score (0-10)"
+#             ]:
+#                 try:
+#                     value = float(value)
+#                 except:
+#                     value = 0
+
+#             item_data[key] = value
+
+#         parsed_items.append(item_data)
+#         print('parsed_items-->',parsed_items,flush=True)
+#     return parsed_items
+
 def parse_monday_board_data(board_data):
     print('inside this parse monday data',flush=True)
     print('board-data----->',board_data,flush=True)
     parsed_items = []
 
-    # Map column titles to IDs for easier access
-    column_id_map = {
-        "Lead_Creation_Date": "date_mktearzs",  
-        "Close_Date": "date_mktezc1y",
-        "Country": "text_mktebys0",
-        "City": "text_mktemekh",
-        "Customer Id": "text_mkteca06",
-        "Area Type": "text_mktf4v1k",
-        "Customer Age": "numeric_mktff5gw",
-        "Customer_Segment": "text_mktenj5e",
-        "Lead Owner": "person",
-        "Manager": "multiple_person_mktenvjm",
-        "Product_Name": "text_mktexk7m",
-        "SKU": "text_mktekj0c",
-        "Units_Sold": "numeric_mkteyfx2",
-        "Price_Per_Unit ($)": "numeric_mktebsrg",
-        "Cost_Per_Unit ($)": "numeric_mktedry",
-        "Discount_Applied (%)": "numeric_mktezn44",
-        "Total_Revenue ($)": "numeric_mkteyhgs",
-        "Sales Channel": "text_mkterm44",
-        "Lead Score": "text_mktefcba",
-        "Feedback_Summary": "text_mktevjd9"
-    }
-
-    # Get list of column IDs in order
-    column_id_order = [col['id'] for col in board_data['columns']]
-    print('column_id_order-->',column_id_order,flush=True)
+    # Create dynamic column title to ID mapping from the fetched board data
+    column_title_to_id = {col['title']: col['id'] for col in board_data['columns']}
+    print('Available columns from board:', column_title_to_id, flush=True)
 
     for item in board_data["items_page"]["items"]:
-        item_data = {
-            "Order_ID": item["name"]             # Placeholder
-        }
+        item_data = {"Order_ID": item["name"]}
 
-        # Rebuild {column_id: text} for current item
-        column_values_raw = item["column_values"]
-        # column_values = {
-        #     column_id_order[i]: column_values_raw[i].get("text", None)
-        #     for i in range(min(len(column_id_order), len(column_values_raw)))
-        # }
+        # Create column_id to value mapping
         column_values = {
             col_val["id"]: col_val.get("text", None)
-            for col_val in column_values_raw
+            for col_val in item["column_values"]
         }
 
-
-        # Extract and format each required field
-        for key, col_id in column_id_map.items():
+        # Process each column dynamically based on what's available in the board
+        for col_title, col_id in column_title_to_id.items():
             value = column_values.get(col_id, None)
-
-            # if key in ["Lead_Creation_Date", "Close_Date"] and value:
-            #     try:
-            #         date_obj = datetime.strptime(value, "%Y-%m-%d")
-            #         value = date_obj.strftime("%d-%m-%Y") if key == "Close_Date" else date_obj.toordinal()
-            #     except Exception:
-            #         value = None
-            if key in ["Lead_Creation_Date", "Close_Date"] and value:
+            
+            # Apply formatting based on column title patterns
+            if any(date_keyword in col_title.lower() for date_keyword in ['date', 'created', 'close']):
+                if value:
+                    try:
+                        value = value.strip('"')
+                        date_obj = datetime.strptime(value, "%Y-%m-%d")
+                        value = date_obj.strftime("%d-%m-%Y") if 'close' in col_title.lower() else date_obj.toordinal()
+                    except Exception as e:
+                        print(f"Date parsing failed for {col_title}: {value}, error: {e}", flush=True)
+                        value = None
+            
+            elif any(numeric_keyword in col_title.lower() for numeric_keyword in ['age', 'sold', 'unit', 'price', 'cost', 'discount', 'revenue', 'score']):
                 try:
-                    value = value.strip('"')  # ← remove any surrounding quotes
-                    date_obj = datetime.strptime(value, "%Y-%m-%d")
-                    value = date_obj.strftime("%d-%m-%Y") if key == "Close_Date" else date_obj.toordinal()
-                except Exception as e:
-                    print(f"Date parsing failed for key: {key}, value: {value}, error: {e}", flush=True)
-                    value = None
-
-
-            elif key in [
-                "Units_Sold", "Price_Per_Unit ($)", "Cost_Per_Unit ($)", "Discount_Applied (%)",
-                "Total_Revenue ($)", "NPS_Score (0-10)"
-            ]:
-                try:
-                    value = float(value)
+                    value = float(value) if value else 0
                 except:
                     value = 0
-
-            item_data[key] = value
+            
+            # Use column title as the key in item_data
+            item_data[col_title] = value
 
         parsed_items.append(item_data)
         print('parsed_items-->',parsed_items,flush=True)
+    
     return parsed_items
+
 
 # def parse_monday_board_data(board_data):
 #     print('inside this parse monday data',flush=True)
