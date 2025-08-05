@@ -197,21 +197,21 @@ def parse_monday_board_data(board_data):
             value = column_values.get(col_id, None)
             
             # Apply formatting based on column title patterns
-            if any(date_keyword in col_title.lower() for date_keyword in ['date', 'created', 'close']):
-                if value:
-                    try:
-                        value = value.strip('"')
-                        date_obj = datetime.strptime(value, "%Y-%m-%d")
-                        value = date_obj.strftime("%d-%m-%Y") if 'close' in col_title.lower() else date_obj.toordinal()
-                    except Exception as e:
-                        print(f"Date parsing failed for {col_title}: {value}, error: {e}", flush=True)
-                        value = None
+            # if any(date_keyword in col_title.lower() for date_keyword in ['date', 'created', 'close']):
+            #     if value:
+            #         try:
+            #             value = value.strip('"')
+            #             date_obj = datetime.strptime(value, "%Y-%m-%d")
+            #             value = date_obj.strftime("%d-%m-%Y") if 'close' in col_title.lower() else date_obj.toordinal()
+            #         except Exception as e:
+            #             print(f"Date parsing failed for {col_title}: {value}, error: {e}", flush=True)
+            #             value = None
             
-            elif any(numeric_keyword in col_title.lower() for numeric_keyword in ['age', 'sold', 'unit', 'price', 'cost', 'discount', 'revenue', 'score']):
-                try:
-                    value = float(value) if value else 0
-                except:
-                    value = 0
+            # elif any(numeric_keyword in col_title.lower() for numeric_keyword in ['age', 'sold', 'unit', 'price', 'cost', 'discount', 'revenue', 'score']):
+            #     try:
+            #         value = float(value) if value else 0
+            #     except:
+            #         value = 0
             
             # Use column title as the key in item_data
             item_data[col_title] = value
