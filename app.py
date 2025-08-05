@@ -232,8 +232,12 @@ def fetch_board_data(board_id_north):
 def parse_monday_board_data(board_data):
     print('inside this parse monday data',flush=True)
     parsed_items = []
+    print(f'Total items to process: {len(board_data["items_page"]["items"])}', flush=True)
+
 
     for item in board_data["items_page"]["items"]:
+        print(f'Processing item: {item["name"]} (ID: {item.get("id", "Unknown")})', flush=True)
+
         item_data = {"Order_ID": item["name"]}
 
         # Create column_title to value mapping using the column info from each value
@@ -242,6 +246,8 @@ def parse_monday_board_data(board_data):
             if col_value.get("column") and col_value["column"].get("title"):
                 column_title = col_value["column"]["title"]
                 column_values[column_title] = col_value.get("text", None)
+            print(f'Raw column_values: {column_values}', flush=True)
+  
 
         print(f'Available column values for item {item["name"]}: {list(column_values.keys())}', flush=True)
 
@@ -271,6 +277,8 @@ def parse_monday_board_data(board_data):
 
         for output_key, column_title in field_mappings.items():
             value = column_values.get(column_title, None)
+            print(f'Mapping {output_key} -> {column_title}: "{value}"', flush=True)
+
             
             if value is None:
                 print(f'⚠️ No value found for column "{column_title}"', flush=True)
@@ -287,8 +295,11 @@ def parse_monday_board_data(board_data):
                     value = float(value) if value else 0
                 except:
                     value = 0
+                print(f'Final value for {output_key}: {value}', flush=True)
+
 
             item_data[output_key] = value
+            print(f'Complete item_data: {item_data}', flush=True)
 
         parsed_items.append(item_data)
     
