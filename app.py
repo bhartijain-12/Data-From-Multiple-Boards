@@ -53,12 +53,13 @@ def fetch_board_data(board_id_north):
                 name
                column_values {{
                                 id
+                                text
+                                value
                                 column {{
                                     title
                                     type
                                 }}
-                                text
-                                value
+                                
                 }}
               }}
             }}
@@ -100,8 +101,8 @@ def parse_monday_board_data(board_data):
         "Country": "text_mktebys0",
         "City": "text_mktemekh",
         "Customer Id": "text_mkteca06",
-        "Area Type": "text_mktg5jgn",
-        "Customer Age": "numeric_mktgk91w",
+        "Area Type": "text_mktf4v1k",
+        "Customer Age": "numeric_mktff5gw",
         "Customer_Segment": "text_mktenj5e",
         "Lead Owner": "person",
         "Manager": "multiple_person_mktenvjm",
