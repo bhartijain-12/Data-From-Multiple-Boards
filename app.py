@@ -92,11 +92,13 @@ def parse_monday_board_data(board_data):
 
     # Map column titles to IDs for easier access
     column_id_map = {
-        "Lead_Creation_Date": "date_mktearzs",
-        "Close_Date": "date_mktezc1y",
+        "Lead_Creation_Date": "date_mktearzs",  
+        "Close_Date": "date_mktezc1y", 
         "Country": "text_mktebys0",
         "City": "text_mktemekh",
         "Customer_ID": "text_mkteca06",
+        "Area": "text_mktg5jgn",
+        "Age": "numeric_mktgk91w",
         "Customer_Segment": "text_mktenj5e",
         "Lead Owner": "person",
         "Manager": "multiple_person_mktenvjm",
@@ -118,9 +120,7 @@ def parse_monday_board_data(board_data):
 
     for item in board_data["items_page"]["items"]:
         item_data = {
-            "Order_ID": item["name"],
-            "Area": "Urban",               # You can modify this logic later
-            "Customer Age": 45             # Placeholder
+            "Order_ID": item["name"]             # Placeholder
         }
 
         # Rebuild {column_id: text} for current item
