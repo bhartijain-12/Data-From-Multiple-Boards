@@ -99,9 +99,9 @@ def parse_monday_board_data(board_data):
         "Close_Date": "date_mktezc1y",
         "Country": "text_mktebys0",
         "City": "text_mktemekh",
-        "Customer_ID": "text_mkteca06",
-        "Area": "text_mktg5jgn",
-        "Age": "numeric_mktgk91w",
+        "Customer Id": "text_mkteca06",
+        "Area Type": "text_mktg5jgn",
+        "Customer Age": "numeric_mktgk91w",
         "Customer_Segment": "text_mktenj5e",
         "Lead Owner": "person",
         "Manager": "multiple_person_mktenvjm",
@@ -112,8 +112,8 @@ def parse_monday_board_data(board_data):
         "Cost_Per_Unit ($)": "numeric_mktedry",
         "Discount_Applied (%)": "numeric_mktezn44",
         "Total_Revenue ($)": "numeric_mkteyhgs",
-        "Sales_Channel": "text_mkterm44",
-        "NPS_Score (0-10)": "text_mktefcba",
+        "Sales Channel": "text_mkterm44",
+        "Lead Score": "text_mktefcba",
         "Feedback_Summary": "text_mktevjd9"
     }
 
@@ -137,12 +137,21 @@ def parse_monday_board_data(board_data):
         for key, col_id in column_id_map.items():
             value = column_values.get(col_id, None)
 
+            # if key in ["Lead_Creation_Date", "Close_Date"] and value:
+            #     try:
+            #         date_obj = datetime.strptime(value, "%Y-%m-%d")
+            #         value = date_obj.strftime("%d-%m-%Y") if key == "Close_Date" else date_obj.toordinal()
+            #     except Exception:
+            #         value = None
             if key in ["Lead_Creation_Date", "Close_Date"] and value:
                 try:
+                    value = value.strip('"')  # ← remove any surrounding quotes
                     date_obj = datetime.strptime(value, "%Y-%m-%d")
                     value = date_obj.strftime("%d-%m-%Y") if key == "Close_Date" else date_obj.toordinal()
-                except Exception:
+                except Exception as e:
+                    print(f"Date parsing failed for key: {key}, value: {value}, error: {e}", flush=True)
                     value = None
+
 
             elif key in [
                 "Units_Sold", "Price_Per_Unit ($)", "Cost_Per_Unit ($)", "Discount_Applied (%)",
