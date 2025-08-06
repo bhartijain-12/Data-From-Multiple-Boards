@@ -194,6 +194,10 @@ def parse_monday_board_data(board_data):
 
         # Process each column dynamically based on what's available in the board
         for col_title, col_id in column_title_to_id.items():
+            # Skip the 'name' column since we're using item["name"] as "Order_ID"
+            if col_id == 'name':
+                continue
+
             value = column_values.get(col_id, None)
             
             # Apply formatting based on column title patterns
