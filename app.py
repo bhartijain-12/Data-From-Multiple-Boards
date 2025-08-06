@@ -195,9 +195,8 @@ def parse_monday_board_data(board_data):
         # Process each column dynamically based on what's available in the board
         for col_title, col_id in column_title_to_id.items():
             # Skip the 'name' column since we're using item["name"] as "Order_ID"
-            if col_id == 'name' or col_title == 'Next Steps':
-            
-              continue
+            if col_id == 'name' or col_title == 'Product Name' or col_title == 'Status' or col_title == 'Target Date' or col_title == 'Lead Type' or col_title == 'Sales Price' or col_title == 'Selling Price' or col_title == 'Lead Score' or col_title == 'Lead Owner' or col_title == 'Manager':    
+             continue
 
             value = column_values.get(col_id, None)
             
