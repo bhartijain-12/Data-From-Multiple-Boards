@@ -47,7 +47,7 @@ def fetch_board_data(board_id_north):
               id
               title
             }}
-            items_page(limit: 500) {{
+            items_page(limit: 5) {{
               items {{
                 id
                 name
