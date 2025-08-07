@@ -186,22 +186,25 @@ def fetch_monday_board_data(board_id, item_id, column_ids=None):
 
 
 def upload_file_to_supplier_manifest_column(item_id, file_path, column_id, board_data):
-    # Check if the column already has a file
-    print('inside this file to supplier manifest column',flush=True)
+    print('inside this file to supplier manifest column', flush=True)
     for item in board_data['items_page']['items']:
-        if item['id'] == str(item_id):
+        print(f"Checking item: {item['id']} against target item: {item_id}", flush=True)
+        if str(item['id']) == str(item_id):
+            print("Item matched. Checking column values...", flush=True)
             for col_val in item['column_values']:
                 if col_val['id'] == column_id:
                     existing_value = col_val.get('value')
-                    print('existing_value',existing_value,flush=True)
+                    print('existing_value', existing_value, flush=True)
                     if existing_value:
-                        import json
-                        file_data = json.loads(existing_value)
-                        print('file_data',file_data,flush=True)
-                        asset_ids = [asset['id'] for asset in file_data.get('files', [])]
-                        print('asset_ids',asset_ids,flush=True)
-                        for asset_id in asset_ids:
-                            delete_file(asset_id)
+                        try:
+                            file_data = json.loads(existing_value)
+                            print('file_data', file_data, flush=True)
+                            asset_ids = [asset['id'] for asset in file_data.get('files', [])]
+                            print('asset_ids', asset_ids, flush=True)
+                            for asset_id in asset_ids:
+                                delete_file(asset_id)
+                        except json.JSONDecodeError:
+                            print("Invalid JSON in existing value.", flush=True)
                     break
             break
 
