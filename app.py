@@ -85,94 +85,9 @@ def fetch_board_data(board_id_north):
 
     file_path = create_pdf_from_json(parse_json)
 
-    upload_file_to_supplier_manifest_column(2052855846,file_path,"file_mktf24g0")
+    upload_file_to_supplier_manifest_column(2052855846,file_path,"file_mktf24g0",board)
     
-    # return board
     return board
-# def parse_monday_board_data(board_data):
-#     print('inside this parse monday data',flush=True)
-#     print('board-data----->',board_data,flush=True)
-#     parsed_items = []
-
-#     # Map column titles to IDs for easier access
-#     column_id_map = {
-#         "Lead_Creation_Date": "date_mktearzs",  
-#         "Close_Date": "date_mktezc1y",
-#         "Country": "text_mktebys0",
-#         "City": "text_mktemekh",
-#         "Customer Id": "text_mkteca06",
-#         "Area Type": "text_mktf4v1k",
-#         "Customer Age": "numeric_mktff5gw",
-#         "Customer_Segment": "text_mktenj5e",
-#         "Lead Owner": "person",
-#         "Manager": "multiple_person_mktenvjm",
-#         "Product_Name": "text_mktexk7m",
-#         "SKU": "text_mktekj0c",
-#         "Units_Sold": "numeric_mkteyfx2",
-#         "Price_Per_Unit ($)": "numeric_mktebsrg",
-#         "Cost_Per_Unit ($)": "numeric_mktedry",
-#         "Discount_Applied (%)": "numeric_mktezn44",
-#         "Total_Revenue ($)": "numeric_mkteyhgs",
-#         "Sales Channel": "text_mkterm44",
-#         "Lead Score": "text_mktefcba",
-#         "Feedback_Summary": "text_mktevjd9"
-#     }
-
-#     # Get list of column IDs in order
-#     column_id_order = [col['id'] for col in board_data['columns']]
-#     print('column_id_order-->',column_id_order,flush=True)
-
-#     for item in board_data["items_page"]["items"]:
-#         item_data = {
-#             "Order_ID": item["name"]             # Placeholder
-#         }
-
-#         # Rebuild {column_id: text} for current item
-#         column_values_raw = item["column_values"]
-#         # column_values = {
-#         #     column_id_order[i]: column_values_raw[i].get("text", None)
-#         #     for i in range(min(len(column_id_order), len(column_values_raw)))
-#         # }
-#         column_values = {
-#             col_val["id"]: col_val.get("text", None)
-#             for col_val in column_values_raw
-#         }
-
-
-#         # Extract and format each required field
-#         for key, col_id in column_id_map.items():
-#             value = column_values.get(col_id, None)
-
-#             # if key in ["Lead_Creation_Date", "Close_Date"] and value:
-#             #     try:
-#             #         date_obj = datetime.strptime(value, "%Y-%m-%d")
-#             #         value = date_obj.strftime("%d-%m-%Y") if key == "Close_Date" else date_obj.toordinal()
-#             #     except Exception:
-#             #         value = None
-#             if key in ["Lead_Creation_Date", "Close_Date"] and value:
-#                 try:
-#                     value = value.strip('"')  # ← remove any surrounding quotes
-#                     date_obj = datetime.strptime(value, "%Y-%m-%d")
-#                     value = date_obj.strftime("%d-%m-%Y") if key == "Close_Date" else date_obj.toordinal()
-#                 except Exception as e:
-#                     print(f"Date parsing failed for key: {key}, value: {value}, error: {e}", flush=True)
-#                     value = None
-
-
-#             elif key in [
-#                 "Units_Sold", "Price_Per_Unit ($)", "Cost_Per_Unit ($)", "Discount_Applied (%)",
-#                 "Total_Revenue ($)", "NPS_Score (0-10)"
-#             ]:
-#                 try:
-#                     value = float(value)
-#                 except:
-#                     value = 0
-
-#             item_data[key] = value
-
-#         parsed_items.append(item_data)
-#         print('parsed_items-->',parsed_items,flush=True)
-#     return parsed_items
 
 def parse_monday_board_data(board_data):
     print('inside this parse monday data',flush=True)
@@ -226,154 +141,6 @@ def parse_monday_board_data(board_data):
     return parsed_items
 
 
-# def parse_monday_board_data(board_data):
-#     print('inside this parse monday data',flush=True)
-#     parsed_items = []
-
-#     # Create column title to ID mapping from the board data
-#     column_title_to_id = {}
-#     for col in board_data['columns']:
-#         column_title_to_id[col['title']] = col['id']
-    
-#     print('Available columns:', column_title_to_id, flush=True)
-
-#     for item in board_data["items_page"]["items"]:
-#         item_data = {"Order_ID": item["name"]}
-
-#         # Create column_id to value mapping
-#         column_values = {}
-#         for i, col_value in enumerate(item["column_values"]):
-#             if i < len(board_data['columns']):
-#                 col_id = board_data['columns'][i]['id']
-#                 column_values[col_id] = col_value.get("text", None)
-
-#         # Map to your desired output format using column titles
-#         field_mappings = {
-#             "Lead_Creation_Date": "Lead_Creation_Date",  # Use actual column titles
-#             "Close_Date": "Close_Date", 
-#             "Country": "Country",
-#             "City": "City",
-#             "Customer_ID": "Customer_ID",
-#             "Area": "Area",
-#             "Customer Age": "Customer Age",  # Note: was "Age" 
-#             "Customer_Segment": "Customer_Segment",
-#             "Lead Owner": "Lead Owner",
-#             "Manager": "Manager",
-#             "Product_Name": "Product_Name",
-#             "SKU": "SKU",
-#             "Units_Sold": "Units_Sold",
-#             "Price_Per_Unit ($)": "Price_Per_Unit ($)",
-#             "Cost_Per_Unit ($)": "Cost_Per_Unit ($)",
-#             "Discount_Applied (%)": "Discount_Applied (%)",
-#             "Total_Revenue ($)": "Total_Revenue ($)",
-#             "Sales_Channel": "Sales_Channel",
-#             "NPS_Score (0-10)": "NPS_Score (0-10)",
-#             "Feedback_Summary": "Feedback_Summary"
-#         }
-
-
-
-#         for output_key, column_title in field_mappings.items():
-#             col_id = column_title_to_id.get(column_title)
-#             value = column_values.get(col_id, None) if col_id else None
-
-#             # Format dates and numbers as needed
-#             if output_key in ["Lead_Creation_Date", "Close_Date"] and value:
-#                 try:
-#                     date_obj = datetime.strptime(value, "%Y-%m-%d")
-#                     value = date_obj.strftime("%d-%m-%Y") if output_key == "Close_Date" else date_obj.toordinal()
-#                 except:
-#                     value = None
-#             elif output_key in ["Units_Sold", "Price_Per_Unit ($)", "Cost_Per_Unit ($)", "Discount_Applied (%)", "Total_Revenue ($)", "NPS_Score (0-10)"]:
-#                 try:
-#                     value = float(value) if value else 0
-#                 except:
-#                     value = 0
-
-#             item_data[output_key] = value
-
-#         parsed_items.append(item_data)
-    
-#     return parsed_items
-
-# def parse_monday_board_data(board_data):
-#     print('inside this parse monday data',flush=True)
-#     parsed_items = []
-#     print(f'Total items to process: {len(board_data["items_page"]["items"])}', flush=True)
-
-
-#     for item in board_data["items_page"]["items"]:
-#         print(f'Processing item: {item["name"]} (ID: {item.get("id", "Unknown")})', flush=True)
-
-#         item_data = {"Order_ID": item["name"]}
-
-#         # Create column_title to value mapping using the column info from each value
-#         column_values = {}
-#         for col_value in item["column_values"]:
-#             if col_value.get("column") and col_value["column"].get("title"):
-#                 column_title = col_value["column"]["title"]
-#                 column_values[column_title] = col_value.get("text", None)
-#             print(f'Raw column_values: {column_values}', flush=True)
-  
-
-#         print(f'Available column values for item {item["name"]}: {list(column_values.keys())}', flush=True)
-
-#         # Your field mappings (update these to match actual Monday.com column titles)
-#         field_mappings = {
-#             "Lead_Creation_Date": "Lead_Creation_Date",
-#             "Close_Date": "Close_Date", 
-#             "Country": "Country",
-#             "City": "City",
-#             "Customer_ID": "Customer_ID",
-#             "Area": "Area",
-#             "Customer Age": "Customer Age",
-#             "Customer_Segment": "Customer_Segment",
-#             "Lead Owner": "Lead Owner",
-#             "Manager": "Manager",
-#             "Product_Name": "Product_Name",
-#             "SKU": "SKU",
-#             "Units_Sold": "Units_Sold",
-#             "Price_Per_Unit ($)": "Price_Per_Unit ($)",
-#             "Cost_Per_Unit ($)": "Cost_Per_Unit ($)",
-#             "Discount_Applied (%)": "Discount_Applied (%)",
-#             "Total_Revenue ($)": "Total_Revenue ($)",
-#             "Sales_Channel": "Sales_Channel",
-#             "NPS_Score (0-10)": "NPS_Score (0-10)",
-#             "Feedback_Summary": "Feedback_Summary"
-#         }
-
-#         for output_key, column_title in field_mappings.items():
-#             value = column_values.get(column_title, None)
-#             print(f'Mapping {output_key} -> {column_title}: "{value}"', flush=True)
-
-            
-#             if value is None:
-#                 print(f'⚠️ No value found for column "{column_title}"', flush=True)
-
-#             # Format dates and numbers as needed
-#             if output_key in ["Lead_Creation_Date", "Close_Date"] and value:
-#                 try:
-#                     date_obj = datetime.strptime(value, "%Y-%m-%d")
-#                     value = date_obj.strftime("%d-%m-%Y") if output_key == "Close_Date" else date_obj.toordinal()
-#                 except:
-#                     value = None
-#             elif output_key in ["Units_Sold", "Price_Per_Unit ($)", "Cost_Per_Unit ($)", "Discount_Applied (%)", "Total_Revenue ($)", "NPS_Score (0-10)"]:
-#                 try:
-#                     value = float(value) if value else 0
-#                 except:
-#                     value = 0
-#                 print(f'Final value for {output_key}: {value}', flush=True)
-
-
-#             item_data[output_key] = value
-#             print(f'Complete item_data: {item_data}', flush=True)
-
-#         parsed_items.append(item_data)
-    
-#     return parsed_items
-
-
-
 def fetch_monday_board_data(board_id, item_id, column_ids=None):
     
     url = "https://api.monday.com/v2"
@@ -386,21 +153,6 @@ def fetch_monday_board_data(board_id, item_id, column_ids=None):
     print('column ids --->',column_ids,flush=True)
     column_id_string = ', '.join(f'"{cid}"' for cid in column_ids)
     print('ccolumn_id_string --->',column_id_string,flush=True)
-
-    # query = f"""
-    # query {{
-    #     items(ids: {item_id}) {{
-    #         name
-    #         column_values(ids: {column_id_string}) {{
-    #             id
-    #             text
-    #             }}
-    #             column{{
-    #             title 
-    #         }}
-    #     }}
-    # }}
-    # """
 
     query = f"""
     query {{
@@ -415,7 +167,7 @@ def fetch_monday_board_data(board_id, item_id, column_ids=None):
             }}
         }}
     }}
-"""
+    """
     
 
     response = requests.post(url, headers=headers, json={'query': query})
@@ -433,8 +185,28 @@ def fetch_monday_board_data(board_id, item_id, column_ids=None):
         return None
 
 
+def upload_file_to_supplier_manifest_column(item_id, file_path, column_id, board_data):
+    # Check if the column already has a file
+    print('inside this file to supplier manifest column',flush=True)
+    for item in board_data['items_page']['items']:
+        if item['id'] == str(item_id):
+            for col_val in item['column_values']:
+                if col_val['id'] == column_id:
+                    existing_value = col_val.get('value')
+                    if existing_value:
+                        import json
+                        file_data = json.loads(existing_value)
+                        asset_ids = [asset['id'] for asset in file_data.get('files', [])]
+                        for asset_id in asset_ids:
+                            delete_file(asset_id)
+                    break
+            break
 
-def upload_file_to_supplier_manifest_column(item_id, file_path, column_id):
+    # Upload new file
+    upload_file(item_id, column_id, file_path)
+
+
+def upload_file(item_id, file_path, column_id):
     print('inside this upload column--->',flush=True)
     url = "https://api.monday.com/v2/file"
     headers = {
@@ -481,47 +253,23 @@ def upload_file_to_supplier_manifest_column(item_id, file_path, column_id):
         if "errors" in resp_json:
             print("GraphQL-Errors:", resp_json["errors"], flush=True)
         else:
-            print("✅ PDF uploaded successfully.", flush=True)
+            print("PDF uploaded successfully.", flush=True)
     except Exception as e:
-        print("❌ Failed to parse response:", str(e), flush=True)
+        print("Failed to parse response:", str(e), flush=True)
         print("Raw response:", response.text, flush=True)
 
-# def create_pdf_with_json_content(json_data, filename="output.pdf"):
-#     print('inside create file',flush=True)
-#     pdf = FPDF()
-#     pdf.add_page()
-#     pdf.set_font("Courier", size=10)
-
-#     # Convert dict/list to pretty-printed JSON string
-#     json_str = json.dumps(json_data, indent=4)
-
-#     # Add line by line to the PDF
-#     for line in json_str.split("\n"):
-#         pdf.multi_cell(0, 5, line)
-
-#     pdf.output(filename)
-#     print(f"PDF saved: {filename}",flush=True)
-#     return filename
-
-# def create_pdf_with_json_content(json_data, filename="output.pdf"):
-#     print('Creating PDF with one-line JSON...', flush=True)
-#     print('Creating PDF with asia data...',json_data, flush=True)
-    
-
-#     # Convert JSON to a compact string (no indent)
-#     json_str = json.dumps(json_data)
-
-#     pdf = FPDF()
-#     pdf.set_auto_page_break(auto=True, margin=10)
-#     pdf.add_page()
-#     pdf.set_font("Courier", size=9)
-
-#     # Write the full JSON string (will wrap naturally)
-#     pdf.multi_cell(0, 5, json_str)
-
-#     pdf.output(filename)
-#     print(f"PDF saved as: {filename}", flush=True)
-#     return filename
+def delete_file(asset_id):
+    print('inside this delete file',flush=True)
+    query = f"""
+    mutation {{
+      delete_file (file_id: {asset_id}) {{
+        id
+      }}
+    }}
+    """
+    response = requests.post(API_URL, json={"query": query}, headers=HEADERS)
+    response.raise_for_status()
+    print(f"Deleted file with ID: {asset_id}",flush=True)
 
 
 def create_pdf_from_json(json_data, filename="output.pdf"):
