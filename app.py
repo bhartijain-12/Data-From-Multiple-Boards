@@ -219,7 +219,8 @@ def check_and_upload_file(item_id, file_path, column_id):
             if existing_value:
                 try:
                     file_data = json.loads(existing_value)
-                    asset_ids = [asset["id"] for asset in file_data.get("files", [])]
+                    # asset_ids = [asset["id"] for asset in file_data.get("files", [])]
+                    asset_ids = [asset["assetId"] for asset in file_data.get("files", []) if "assetId" in asset]
                     print("Existing file asset IDs:", asset_ids, flush=True)
                     for asset_id in asset_ids:
                         delete_file(asset_id)
