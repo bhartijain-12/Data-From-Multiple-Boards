@@ -203,7 +203,7 @@ def upload_file_to_supplier_manifest_column(item_id, file_path, column_id, board
             break
 
     # Upload new file
-    upload_file(item_id, column_id, file_path)
+    upload_file(item_id, file_path, column_id)
 
 
 def upload_file(item_id, file_path, column_id):
