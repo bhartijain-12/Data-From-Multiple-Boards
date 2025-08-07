@@ -193,10 +193,13 @@ def upload_file_to_supplier_manifest_column(item_id, file_path, column_id, board
             for col_val in item['column_values']:
                 if col_val['id'] == column_id:
                     existing_value = col_val.get('value')
+                    print('existing_value',existing_value,flush=True)
                     if existing_value:
                         import json
                         file_data = json.loads(existing_value)
+                        print('file_data',file_data,flush=True)
                         asset_ids = [asset['id'] for asset in file_data.get('files', [])]
+                        print('asset_ids',asset_ids,flush=True)
                         for asset_id in asset_ids:
                             delete_file(asset_id)
                     break
