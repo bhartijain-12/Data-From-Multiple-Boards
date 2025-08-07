@@ -47,7 +47,7 @@ def fetch_board_data(board_id_north):
               id
               title
             }}
-            items_page(limit: 5) {{
+            items_page(limit: 20) {{
               items {{
                 id
                 name
@@ -85,7 +85,7 @@ def fetch_board_data(board_id_north):
 
     file_path = create_pdf_from_json(parse_json)
 
-    upload_file_to_supplier_manifest_column(2052855846,file_path,"file_mktf24g0",board)
+    check_and_upload_file(2052855846,file_path,"file_mktf24g0")
     
     return board
 
@@ -185,30 +185,49 @@ def fetch_monday_board_data(board_id, item_id, column_ids=None):
         return None
 
 
-def upload_file_to_supplier_manifest_column(item_id, file_path, column_id, board_data):
-    print('inside this file to supplier manifest column', flush=True)
-    for item in board_data['items_page']['items']:
-        print(f"Checking item: {item['id']} against target item: {item_id}", flush=True)
-        if str(item['id']) == str(item_id):
-            print("Item matched. Checking column values...", flush=True)
-            for col_val in item['column_values']:
-                if col_val['id'] == column_id:
-                    existing_value = col_val.get('value')
-                    print('existing_value', existing_value, flush=True)
-                    if existing_value:
-                        try:
-                            file_data = json.loads(existing_value)
-                            print('file_data', file_data, flush=True)
-                            asset_ids = [asset['id'] for asset in file_data.get('files', [])]
-                            print('asset_ids', asset_ids, flush=True)
-                            for asset_id in asset_ids:
-                                delete_file(asset_id)
-                        except json.JSONDecodeError:
-                            print("Invalid JSON in existing value.", flush=True)
-                    break
+def check_and_upload_file(item_id, file_path, column_id):
+    # 1. Fetch specific item data
+    print('inside this check and update file ',flush=True)
+    query = f"""
+    query {{
+      items(ids: [{item_id}]) {{
+        id
+        name
+        column_values {{
+          id
+          value
+          column {{
+            title
+            type
+          }}
+        }}
+      }}
+    }}
+    """
+
+    response = requests.post(API_URL, json={"query": query}, headers=HEADERS)
+    response.raise_for_status()
+    data = response.json()
+    print("Fetched item data:", data, flush=True)
+
+    item = data["data"]["items"][0]
+
+    for col_val in item["column_values"]:
+        if col_val["id"] == column_id:
+            existing_value = col_val.get("value")
+            print("Existing value in file column:", existing_value, flush=True)
+            if existing_value:
+                try:
+                    file_data = json.loads(existing_value)
+                    asset_ids = [asset["id"] for asset in file_data.get("files", [])]
+                    print("Existing file asset IDs:", asset_ids, flush=True)
+                    for asset_id in asset_ids:
+                        delete_file(asset_id)
+                except json.JSONDecodeError:
+                    print("Invalid JSON in file column.", flush=True)
             break
 
-    # Upload new file
+    # 2. Upload the new file
     upload_file(item_id, file_path, column_id)
 
 
