@@ -266,7 +266,7 @@ def clear_file_column(board_id, item_id, column_id):
 
     response = requests.post(API_URL, json={"query": mutation, "variables": variables}, headers=HEADERS)
     response.raise_for_status()
-`   print('response-clear-file->',response,flush=True)
+    print('response-clear-file->',response,flush=True)
     print(f"Cleared file column '{column_id}' on item {item_id}", flush=True)
 
 
