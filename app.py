@@ -301,6 +301,7 @@ def delete_file(asset_id):
     """
     response = requests.post(API_URL, json={"query": query}, headers=HEADERS)
     response.raise_for_status()
+    print(f"response : {response}", flush=True)
     print(f"Deleted file with ID: {asset_id}",flush=True)
 
 
