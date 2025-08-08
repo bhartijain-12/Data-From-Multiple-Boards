@@ -87,7 +87,7 @@ def fetch_board_data(board_id_north):
 
     file_path = create_pdf_from_json(parse_json)
 
-    clear_file_column(board_id,item_id,non_formatted_files_column_id)
+    clear_file_column(board_id,asia_pacific_sales_item_id,non_formatted_files_column_id)
 
     upload_file(asia_pacific_sales_item_id,file_path,non_formatted_files_column_id)
     
