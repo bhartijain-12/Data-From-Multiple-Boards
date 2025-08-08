@@ -21,7 +21,8 @@ TARGET_COLUMN_ID = "text_mktd466v"
 board_id = 2052340887  
 item_id = 2052855842
 columns = ['long_text_mktf36f7', 'long_text_mktf4sss']
-
+non_formatted_files_column_id = 'file_mktf24g0'
+asia_pacific_sales_item_id = 2052855846
 
 
 API_URL = "https://api.monday.com/v2"
@@ -86,7 +87,9 @@ def fetch_board_data(board_id_north):
 
     file_path = create_pdf_from_json(parse_json)
 
-    check_and_upload_file(2052855846,file_path,"file_mktf24g0")
+    clear_file_column(board_id,item_id,non_formatted_files_column_id)
+
+    upload_file(asia_pacific_sales_item_id,file_path,non_formatted_files_column_id)
     
     return board
 
@@ -185,59 +188,6 @@ def fetch_monday_board_data(board_id, item_id, column_ids=None):
         print(f"Request failed with status {response.status_code}: {response.text}",flush=True)
         return None
 
-
-def check_and_upload_file(item_id, file_path, column_id):
-    # 1. Fetch specific item data
-    print('inside this check and update file ',flush=True)
-    query = f"""
-    query {{
-      items(ids: [{item_id}]) {{
-        id
-        name
-        column_values {{
-          id
-          value
-          column {{
-            title
-            type
-          }}
-        }}
-      }}
-    }}
-    """
-
-    response = requests.post(API_URL, json={"query": query}, headers=HEADERS)
-    response.raise_for_status()
-    data = response.json()
-    print("Fetched item data:", data, flush=True)
-
-    item = data["data"]["items"][0]
-
-    for col_val in item["column_values"]:
-        if col_val["id"] == column_id:
-            existing_value = col_val.get("value")
-            print("Existing value in file column:", existing_value, flush=True)
-            if existing_value:
-                try:
-                    file_data = json.loads(existing_value)
-                    # asset_ids = [asset["id"] for asset in file_data.get("files", [])]
-                    asset_ids = [asset["assetId"] for asset in file_data.get("files", []) if "assetId" in asset]
-                    print("Existing file asset IDs:", asset_ids, flush=True)
-                    for asset_id in asset_ids:
-                        delete_file(asset_id)
-                except json.JSONDecodeError:
-                    print("Invalid JSON in file column.", flush=True)
-                clear_file_column(item_id, column_id)
-
-                time.sleep(1.5)
-            break
-
-    # 2. Upload the new file
-    upload_file(item_id, file_path, column_id)
-
-
-
-
 def upload_file(item_id, file_path, column_id):
     print('inside this upload column--->',flush=True)
     url = "https://api.monday.com/v2/file"
@@ -290,32 +240,33 @@ def upload_file(item_id, file_path, column_id):
         print("Failed to parse response:", str(e), flush=True)
         print("Raw response:", response.text, flush=True)
 
-def delete_file(asset_id):
-    print('inside this delete file',flush=True)
-    query = f"""
-    mutation {{
-      delete_file (file_id: {asset_id}) {{
-        id
-      }}
-    }}
-    """
-    response = requests.post(API_URL, json={"query": query}, headers=HEADERS)
-    response.raise_for_status()
-    print(f"response : {response}", flush=True)
-    print(f"Deleted file with ID: {asset_id}",flush=True)
 
+def clear_file_column(board_id, item_id, column_id):
+    print("Clearing file column using clear_all...", flush=True)
 
-def clear_file_column(item_id, column_id):
-    print('inside clear file column',flush=True)
-    mutation = f"""
-    mutation {{
-      change_column_value(item_id: {item_id}, column_id: "{column_id}", value: "{{\\"files\\":[]}}") {{
+    mutation = """
+    mutation ($boardId: Int!, $itemId: Int!, $columnId: String!, $value: JSON!) {
+      change_column_value(
+        board_id: $boardId,
+        item_id: $itemId,
+        column_id: $columnId,
+        value: $value
+      ) {
         id
-      }}
-    }}
+      }
+    }
     """
-    response = requests.post(API_URL, json={"query": mutation}, headers=HEADERS)
+
+    variables = {
+        "boardId": board_id,
+        "itemId": item_id,
+        "columnId": column_id,
+        "value": json.dumps({"clear_all": True})
+    }
+
+    response = requests.post(API_URL, json={"query": mutation, "variables": variables}, headers=HEADERS)
     response.raise_for_status()
+`   print('response-clear-file->',response,flush=True)
     print(f"Cleared file column '{column_id}' on item {item_id}", flush=True)
 
 
