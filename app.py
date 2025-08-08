@@ -245,13 +245,8 @@ def clear_file_column(board_id, item_id, column_id):
     print("Clearing file column using clear_all...", flush=True)
 
     mutation = """
-    mutation ($boardId: Int!, $itemId: Int!, $columnId: String!, $value: JSON!) {
-      change_column_value(
-        board_id: $boardId,
-        item_id: $itemId,
-        column_id: $columnId,
-        value: $value
-      ) {
+    mutation ClearFileColumn($boardId: ID!, $itemId: ID!, $columnId: String!, $value: JSON!) {
+      change_column_value(board_id: $boardId, item_id: $itemId, column_id: $columnId, value: $value) {
         id
       }
     }
@@ -266,8 +261,10 @@ def clear_file_column(board_id, item_id, column_id):
 
     response = requests.post(API_URL, json={"query": mutation, "variables": variables}, headers=HEADERS)
     response.raise_for_status()
-    print('response-clear-file->',response,flush=True)
+
+    print('response-clear-file ->', response.json(), flush=True)
     print(f"Cleared file column '{column_id}' on item {item_id}", flush=True)
+
 
 
 def create_pdf_from_json(json_data, filename="output.pdf"):
