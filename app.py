@@ -8,6 +8,7 @@ from fpdf import FPDF
 import textwrap
 import re
 from datetime import datetime
+import time
 
 # Load environment variables
 load_dotenv()
@@ -227,6 +228,8 @@ def check_and_upload_file(item_id, file_path, column_id):
                 except json.JSONDecodeError:
                     print("Invalid JSON in file column.", flush=True)
                 clear_file_column(item_id, column_id)
+
+                time.sleep(1.5)
             break
 
     # 2. Upload the new file
