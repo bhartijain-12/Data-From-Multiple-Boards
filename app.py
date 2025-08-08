@@ -226,10 +226,13 @@ def check_and_upload_file(item_id, file_path, column_id):
                         delete_file(asset_id)
                 except json.JSONDecodeError:
                     print("Invalid JSON in file column.", flush=True)
+                clear_file_column(item_id, column_id)
             break
 
     # 2. Upload the new file
     upload_file(item_id, file_path, column_id)
+
+
 
 
 def upload_file(item_id, file_path, column_id):
@@ -296,6 +299,20 @@ def delete_file(asset_id):
     response = requests.post(API_URL, json={"query": query}, headers=HEADERS)
     response.raise_for_status()
     print(f"Deleted file with ID: {asset_id}",flush=True)
+
+
+def clear_file_column(item_id, column_id):
+    print('inside clear file column',flush=True)
+    mutation = f"""
+    mutation {{
+      change_column_value(item_id: {item_id}, column_id: "{column_id}", value: "{{\\"files\\":[]}}") {{
+        id
+      }}
+    }}
+    """
+    response = requests.post(API_URL, json={"query": mutation}, headers=HEADERS)
+    response.raise_for_status()
+    print(f"Cleared file column '{column_id}' on item {item_id}", flush=True)
 
 
 def create_pdf_from_json(json_data, filename="output.pdf"):
