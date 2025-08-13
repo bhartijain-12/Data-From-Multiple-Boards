@@ -57,7 +57,7 @@ def fetch_board_data(board_id,item_id,non_formatted_files_column_id):
               id
               title
             }}
-            items_page(limit: 500) {{
+            items_page(limit: 100) {{
               items {{
                 id
                 name
