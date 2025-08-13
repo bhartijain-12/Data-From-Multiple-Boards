@@ -18,8 +18,7 @@ BOARD_IDS = os.getenv("SOURCE_BOARD_IDS", "").split(",")
 TARGET_BOARD_ID = os.getenv("TARGET_BOARD_ID")
 TARGET_ITEM_ID = "2052301917"
 TARGET_COLUMN_ID = "text_mktd466v"
-board_id = 2052340887  
-item_id = 2052855842
+
 columns = ['long_text_mktf36f7', 'long_text_mktf4sss']
 
 non_formatted_files_column_id = 'file_mktf24g0'
@@ -32,6 +31,8 @@ south_east_and_oceania_region_sales_board_id = 2052800885
 europe_sales_board_id = 2052330963
 asia_pacific_sales_board_id = 2052884263
 
+sales_insights_board_id = 2052340887
+
 
 
 API_URL = "https://api.monday.com/v2"
@@ -42,8 +43,6 @@ HEADERS = {
 
 app = Flask(__name__)
 
-board_id = 2052340887  
-item_id = 2052855842
 columns = ['long_text_mktf36f7', 'long_text_mktf4sss']
 
 
@@ -100,7 +99,7 @@ def fetch_board_data(board_id,item_id,non_formatted_files_column_id):
 
     file_path = create_pdf_from_json(parse_json)
 
-    clear_file_column(board_id,item_id,non_formatted_files_column_id)
+    clear_file_column(sales_insights_board_id,item_id,non_formatted_files_column_id)
 
     upload_file(item_id,file_path,non_formatted_files_column_id)
     
