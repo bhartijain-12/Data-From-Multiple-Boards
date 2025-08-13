@@ -21,8 +21,17 @@ TARGET_COLUMN_ID = "text_mktd466v"
 board_id = 2052340887  
 item_id = 2052855842
 columns = ['long_text_mktf36f7', 'long_text_mktf4sss']
+
 non_formatted_files_column_id = 'file_mktf24g0'
+south_east_and_oceania_region_sales_item_id = 2052340888
 asia_pacific_sales_item_id = 2052855846
+europe_sales_item_id = 2052855842
+
+
+south_east_and_oceania_region_sales_board_id = 2052800885
+europe_sales_board_id = 2052330963
+asia_pacific_sales_board_id = 2052884263
+
 
 
 API_URL = "https://api.monday.com/v2"
@@ -33,23 +42,22 @@ HEADERS = {
 
 app = Flask(__name__)
 
-board_id_north = "2052884263"
 board_id = 2052340887  
 item_id = 2052855842
 columns = ['long_text_mktf36f7', 'long_text_mktf4sss']
 
 
-def fetch_board_data(board_id_north):
-    print('inside this north america',flush=True)
+def fetch_board_data(board_id,item_id,non_formatted_files_column_id):
+    print('inside this board function',flush=True)
     query = f"""
         query {{
-          boards(ids: {board_id_north}) {{
+          boards(ids: {board_id}) {{
             name
             columns {{
               id
               title
             }}
-            items_page(limit: 20) {{
+            items_page(limit: 500) {{
               items {{
                 id
                 name
@@ -72,7 +80,7 @@ def fetch_board_data(board_id_north):
     response = requests.post(API_URL, json={"query": query}, headers=HEADERS)
     response.raise_for_status()
     data = response.json()
-    print('data-north',data,flush=True)
+    print('data--->',data,flush=True)
     
     if "errors" in data:
         raise Exception(f"Error from API: {data['errors']}")
@@ -80,21 +88,26 @@ def fetch_board_data(board_id_north):
     board = data["data"]["boards"][0]
     print('board---->',board,flush=True)
 
-    fetch_monday_board_data(board_id,item_id,columns)
-
-    parse_json = parse_monday_board_data(board)
+    if board_id == asia_pacific_sales_board_id:
+        parse_json = parse_asia_pacific_sales_board_data(board)
+    elif board_id == europe_sales_board_id:
+        parse_json = parse_europe_sales_board_data(board)
+    elif board_id == south_east_and_oceania_region_sales_board_id:
+        parse_json = parse_south_east_and_oceania_region_sales_board_data(board)
+    else:
+        raise ValueError(f"No parser defined for board_id: {board_id}")
     print('parse_json',parse_json,flush=True)
 
     file_path = create_pdf_from_json(parse_json)
 
-    clear_file_column(board_id,asia_pacific_sales_item_id,non_formatted_files_column_id)
+    clear_file_column(board_id,item_id,non_formatted_files_column_id)
 
-    upload_file(asia_pacific_sales_item_id,file_path,non_formatted_files_column_id)
+    upload_file(item_id,file_path,non_formatted_files_column_id)
     
     return board
 
-def parse_monday_board_data(board_data):
-    print('inside this parse monday data',flush=True)
+def parse_south_east_and_oceania_region_sales_board_data(board_data):
+    print('inside this parse_south_east_and_oceania_region_sales_board_data',flush=True)
     print('board-data----->',board_data,flush=True)
     parsed_items = []
 
@@ -119,74 +132,82 @@ def parse_monday_board_data(board_data):
 
             value = column_values.get(col_id, None)
             
-            # Apply formatting based on column title patterns
-            # if any(date_keyword in col_title.lower() for date_keyword in ['date', 'created', 'close']):
-            #     if value:
-            #         try:
-            #             value = value.strip('"')
-            #             date_obj = datetime.strptime(value, "%Y-%m-%d")
-            #             value = date_obj.strftime("%d-%m-%Y") if 'close' in col_title.lower() else date_obj.toordinal()
-            #         except Exception as e:
-            #             print(f"Date parsing failed for {col_title}: {value}, error: {e}", flush=True)
-            #             value = None
-            
-            # elif any(numeric_keyword in col_title.lower() for numeric_keyword in ['age', 'sold', 'unit', 'price', 'cost', 'discount', 'revenue', 'score']):
-            #     try:
-            #         value = float(value) if value else 0
-            #     except:
-            #         value = 0
+            # Use column title as the key in item_data
+            item_data[col_title] = value
+
+        parsed_items.append(item_data)
+        print('parse_south_east_and_oceania_region_sales_board_data-->',parsed_items,flush=True)
+    
+    return parsed_items
+
+def parse_europe_sales_board_data(board_data):
+    print('inside this parse parse_europe_sales_board_data',flush=True)
+    print('board-data----->',board_data,flush=True)
+    parsed_items = []
+
+    # Create dynamic column title to ID mapping from the fetched board data
+    column_title_to_id = {col['title']: col['id'] for col in board_data['columns']}
+    print('Available columns from board:', column_title_to_id, flush=True)
+
+    for item in board_data["items_page"]["items"]:
+        item_data = {"Order_ID": item["name"]}
+
+        # Create column_id to value mapping
+        column_values = {
+            col_val["id"]: col_val.get("text", None)
+            for col_val in item["column_values"]
+        }
+
+        # Process each column dynamically based on what's available in the board
+        for col_title, col_id in column_title_to_id.items():
+            # Skip the 'name' column since we're using item["name"] as "Order_ID"
+            if col_id == 'name' or col_title == 'Product Name' or col_title == 'Status' or col_title == 'Target Date' or col_title == 'Lead Type' or col_title == 'Sales Price' or col_title == 'Selling Price' or col_title == 'Lead Score' or col_title == 'Lead Owner' or col_title == 'Manager':    
+             continue
+
+            value = column_values.get(col_id, None)
             
             # Use column title as the key in item_data
             item_data[col_title] = value
 
         parsed_items.append(item_data)
-        print('parsed_items-->',parsed_items,flush=True)
+        print('parse_europe_sales_board_data-->',parsed_items,flush=True)
     
     return parsed_items
 
+def parse_asia_pacific_sales_board_data(board_data):
+    print('inside this parse parse_asia_pacific_sales_board_data',flush=True)
+    print('board-data----->',board_data,flush=True)
+    parsed_items = []
 
-def fetch_monday_board_data(board_id, item_id, column_ids=None):
+    # Create dynamic column title to ID mapping from the fetched board data
+    column_title_to_id = {col['title']: col['id'] for col in board_data['columns']}
+    print('Available columns from board:', column_title_to_id, flush=True)
+
+    for item in board_data["items_page"]["items"]:
+        item_data = {"Order_ID": item["name"]}
+
+        # Create column_id to value mapping
+        column_values = {
+            col_val["id"]: col_val.get("text", None)
+            for col_val in item["column_values"]
+        }
+
+        # Process each column dynamically based on what's available in the board
+        for col_title, col_id in column_title_to_id.items():
+            # Skip the 'name' column since we're using item["name"] as "Order_ID"
+            if col_id == 'name' or col_title == 'Product Name' or col_title == 'Status' or col_title == 'Target Date' or col_title == 'Lead Type' or col_title == 'Sales Price' or col_title == 'Selling Price' or col_title == 'Lead Score' or col_title == 'Lead Owner' or col_title == 'Manager':    
+             continue
+
+            value = column_values.get(col_id, None)
+            
+            # Use column title as the key in item_data
+            item_data[col_title] = value
+
+        parsed_items.append(item_data)
+        print('parse_asia_pacific_sales_board_data-->',parsed_items,flush=True)
     
-    url = "https://api.monday.com/v2"
-    headers = {
-        "Authorization": API_KEY,
-        "Content-Type": "application/json"
-    }
+    return parsed_items
 
-    column_ids = column_ids or []
-    print('column ids --->',column_ids,flush=True)
-    column_id_string = ', '.join(f'"{cid}"' for cid in column_ids)
-    print('ccolumn_id_string --->',column_id_string,flush=True)
-
-    query = f"""
-    query {{
-        items(ids: {item_id}) {{
-            name
-            column_values(ids: [{column_id_string}]) {{
-                id
-                text
-                column {{
-                    title 
-                }}
-            }}
-        }}
-    }}
-    """
-    
-
-    response = requests.post(url, headers=headers, json={'query': query})
-    print('response0000000 --->',response,flush=True)
-    
-    if response.status_code == 200:
-        data = response.json()
-        print('data- insight--->',data,flush=True)
-        if "errors" in data:
-            print("GraphQL Errors:", data["errors"],flush=True)
-            return None
-        return data["data"]["items"][0]  # Only one item returned
-    else:
-        print(f"Request failed with status {response.status_code}: {response.text}",flush=True)
-        return None
 
 def upload_file(item_id, file_path, column_id):
     print('inside this upload column--->',flush=True)
@@ -395,9 +416,59 @@ def update_target_item(data):
 
 def handle_webhook_trigger():
     print(" Webhook triggered — Fetching & updating...",flush=True)
-    fetch_board_data(board_id_north)
     structured_data = fetch_data_with_columns()
     update_target_item(structured_data)
+    boards_info = [
+    (south_east_and_oceania_region_sales_board_id, south_east_and_oceania_region_sales_item_id, non_formatted_files_column_id)
+    (europe_sales_board_id, europe_sales_item_id, non_formatted_files_column_id),
+    (asia_pacific_sales_board_id, asia_pacific_sales_item_id, non_formatted_files_column_id),
+    ]
+
+    for board_id, item_id, column_id in boards_info:
+        fetch_board_data(board_id, item_id, column_id)
+
+def fetch_monday_board_data(board_id, item_id, column_ids=None):
+    
+    url = "https://api.monday.com/v2"
+    headers = {
+        "Authorization": API_KEY,
+        "Content-Type": "application/json"
+    }
+
+    column_ids = column_ids or []
+    print('column ids --->',column_ids,flush=True)
+    column_id_string = ', '.join(f'"{cid}"' for cid in column_ids)
+    print('ccolumn_id_string --->',column_id_string,flush=True)
+
+    query = f"""
+    query {{
+        items(ids: {item_id}) {{
+            name
+            column_values(ids: [{column_id_string}]) {{
+                id
+                text
+                column {{
+                    title 
+                }}
+            }}
+        }}
+    }}
+    """
+    
+
+    response = requests.post(url, headers=headers, json={'query': query})
+    print('response0000000 --->',response,flush=True)
+    
+    if response.status_code == 200:
+        data = response.json()
+        print('data- insight--->',data,flush=True)
+        if "errors" in data:
+            print("GraphQL Errors:", data["errors"],flush=True)
+            return None
+        return data["data"]["items"][0]  # Only one item returned
+    else:
+        print(f"Request failed with status {response.status_code}: {response.text}",flush=True)
+        return None
 
 
 # @app.route("/webhook", methods=["POST"])
