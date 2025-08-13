@@ -418,14 +418,19 @@ def handle_webhook_trigger():
     print(" Webhook triggered — Fetching & updating...",flush=True)
     structured_data = fetch_data_with_columns()
     update_target_item(structured_data)
-    boards_info = [
-    (south_east_and_oceania_region_sales_board_id, south_east_and_oceania_region_sales_item_id, non_formatted_files_column_id)
-    (europe_sales_board_id, europe_sales_item_id, non_formatted_files_column_id),
-    (asia_pacific_sales_board_id, asia_pacific_sales_item_id, non_formatted_files_column_id)
-    ]
 
-    for board_id, item_id, column_id in boards_info:
-        fetch_board_data(board_id, item_id, column_id)
+    fetch_board_data(south_east_and_oceania_region_sales_board_id, south_east_and_oceania_region_sales_item_id, non_formatted_files_column_id)
+    fetch_board_data(europe_sales_board_id, europe_sales_item_id, non_formatted_files_column_id)
+    fetch_board_data(asia_pacific_sales_board_id, asia_pacific_sales_item_id, non_formatted_files_column_id)
+    
+    # boards_info = [
+    # (south_east_and_oceania_region_sales_board_id, south_east_and_oceania_region_sales_item_id, non_formatted_files_column_id)
+    # (europe_sales_board_id, europe_sales_item_id, non_formatted_files_column_id),
+    # (asia_pacific_sales_board_id, asia_pacific_sales_item_id, non_formatted_files_column_id)
+    # ]
+
+    # for board_id, item_id, column_id in boards_info:
+    #     fetch_board_data(board_id, item_id, column_id)
 
 def fetch_monday_board_data(board_id, item_id, column_ids=None):
     
