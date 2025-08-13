@@ -421,7 +421,7 @@ def handle_webhook_trigger():
     boards_info = [
     (south_east_and_oceania_region_sales_board_id, south_east_and_oceania_region_sales_item_id, non_formatted_files_column_id)
     (europe_sales_board_id, europe_sales_item_id, non_formatted_files_column_id),
-    (asia_pacific_sales_board_id, asia_pacific_sales_item_id, non_formatted_files_column_id),
+    (asia_pacific_sales_board_id, asia_pacific_sales_item_id, non_formatted_files_column_id)
     ]
 
     for board_id, item_id, column_id in boards_info:
