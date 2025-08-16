@@ -57,6 +57,11 @@
       background: #28a745;
       color: white;
     }
+    .meta {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #666;
+    }
   </style>
 </head>
 <body>
@@ -88,28 +93,35 @@ Warm regards,
       <button class="save" onclick="saveDraft()">💾 Save as Draft</button>
       <button class="send" onclick="sendEmail()">📨 Send</button>
     </div>
+
+    <div class="meta">
+      <strong>Item ID:</strong> <span id="item-id-display"></span>
+    </div>
   </div>
 
   <script>
-    // Example placeholders for monday.com API integration
+    // Injected from Flask backend
+    const ITEM_ID = "{{ item_id }}";
+
+    // Display item_id in the footer
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("item-id-display").innerText = ITEM_ID || "(not provided)";
+    });
+
     function saveDraft() {
       const subject = document.getElementById("email-subject").innerText;
       const body = document.getElementById("email-body").innerText;
 
-      // Replace with monday.com API call to update column XYZ
-      console.log("Saving Draft:", subject, body);
-      alert("Draft saved to column XYZ ✅");
+      console.log("Saving Draft for Item:", ITEM_ID, subject, body);
+      alert("Draft saved for Item " + ITEM_ID + " ✅");
     }
 
     function sendEmail() {
       const subject = document.getElementById("email-subject").innerText;
       const body = document.getElementById("email-body").innerText;
 
-      // Replace with monday.com API call:
-      // 1. Save email in column XYZ
-      // 2. Update "send to customer" field to trigger recipe
-      console.log("Sending Email:", subject, body);
-      alert("Email sent to customer 🚀");
+      console.log("Sending Email for Item:", ITEM_ID, subject, body);
+      alert("Email sent for Item " + ITEM_ID + " 🚀");
     }
   </script>
 </body>
