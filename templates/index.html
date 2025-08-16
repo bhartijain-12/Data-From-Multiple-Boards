@@ -114,6 +114,9 @@ Warm regards,
 
       console.log("Saving Draft for Item:", ITEM_ID, subject, body);
       alert("Draft saved for Item " + ITEM_ID + " ✅");
+
+      // Close the current tab
+      window.open('', '_self').close();
     }
 
     function sendEmail() {
@@ -122,6 +125,9 @@ Warm regards,
 
       console.log("Sending Email for Item:", ITEM_ID, subject, body);
       alert("Email sent for Item " + ITEM_ID + " 🚀");
+
+      // Close the current tab
+      window.open('', '_self').close();
     }
   </script>
 </body>
