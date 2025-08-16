@@ -2,7 +2,8 @@ import os
 import json
 import requests
 from dotenv import load_dotenv
-from flask import Flask, request ,jsonify
+from flask import Flask, request, jsonify, render_template
+
 from threading import Thread
 from fpdf import FPDF
 import textwrap
@@ -43,11 +44,11 @@ HEADERS = {
 
 app = Flask(__name__)
 
-@app.route("/")
+@app.route("/", methods=["GET"])
 def index():
-    item_id = request.args.get("itemid")
-    print(f"Received itemid: {item_id}")  # this will show in server logs
-    return f"Item ID received: {item_id}"
+    item_id = request.args.get("itemid", "")  # get itemid from query param
+    print(f"Serving index.html with item_id={item_id}", flush=True)
+    return render_template("index.html", item_id=item_id)
     
 columns = ['long_text_mktf36f7', 'long_text_mktf4sss']
 
