@@ -43,6 +43,12 @@ HEADERS = {
 
 app = Flask(__name__)
 
+@app.route("/")
+def index():
+    item_id = request.args.get("itemid")
+    print(f"Received itemid: {item_id}")  # this will show in server logs
+    return f"Item ID received: {item_id}"
+    
 columns = ['long_text_mktf36f7', 'long_text_mktf4sss']
 
 
