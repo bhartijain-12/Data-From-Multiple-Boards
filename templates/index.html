@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Email Draft UI</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fa;
+      padding: 20px;
+    }
+    .email-container {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 700px;
+      margin: auto;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .email-header {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    .subject {
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #222;
+    }
+    .email-body {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      min-height: 200px;
+      background: #fafafa;
+      white-space: pre-wrap;
+    }
+    .actions {
+      margin-top: 20px;
+      display: flex;
+      gap: 12px;
+    }
+    button {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .save {
+      background: #f0ad4e;
+      color: white;
+    }
+    .send {
+      background: #28a745;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="email-header">Generated Email</div>
+    
+    <div class="subject" id="email-subject">
+      Subject: Thank you for your feedback!
+    </div>
+    
+    <div class="email-body" id="email-body" contenteditable="true">
+Hi CUST-6002,
+
+Thank you for your wonderful feedback regarding our service speed and reliability. We are thrilled to hear that you are very happy with your experience, and we truly appreciate your loyalty.
+
+To ensure your continued satisfaction, here’s what we will do:
+- Acknowledge your positive feedback about speed and reliability.
+- Offer personalized support to assist you further.
+- Provide incentives or loyalty rewards to encourage your continued engagement.
+- Follow up regularly to address any concerns and maintain our connection.
+
+We are grateful for your trust and look forward to serving you even better in the future. Please feel free to reach out anytime!
+
+Warm regards,
+[Your Company’s Support Team]
+    </div>
+
+    <div class="actions">
+      <button class="save" onclick="saveDraft()">💾 Save as Draft</button>
+      <button class="send" onclick="sendEmail()">📨 Send</button>
+    </div>
+  </div>
+
+  <script>
+    // Example placeholders for monday.com API integration
+    function saveDraft() {
+      const subject = document.getElementById("email-subject").innerText;
+      const body = document.getElementById("email-body").innerText;
+
+      // Replace with monday.com API call to update column XYZ
+      console.log("Saving Draft:", subject, body);
+      alert("Draft saved to column XYZ ✅");
+    }
+
+    function sendEmail() {
+      const subject = document.getElementById("email-subject").innerText;
+      const body = document.getElementById("email-body").innerText;
+
+      // Replace with monday.com API call:
+      // 1. Save email in column XYZ
+      // 2. Update "send to customer" field to trigger recipe
+      console.log("Sending Email:", subject, body);
+      alert("Email sent to customer 🚀");
+    }
+  </script>
+</body>
+</html>
