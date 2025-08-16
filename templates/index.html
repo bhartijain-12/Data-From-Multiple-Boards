@@ -100,12 +100,17 @@ Warm regards,
   </div>
 
   <script>
-    // Injected from Flask backend
-    const ITEM_ID = "{{ item_id }}";
+    // Extract itemId from Monday.com board URL
+    function getItemIdFromUrl() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('itemId') || '(not provided)';
+    }
+
+    const ITEM_ID = getItemIdFromUrl();
 
     // Display item_id in the footer
     document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("item-id-display").innerText = ITEM_ID || "(not provided)";
+      document.getElementById("item-id-display").innerText = ITEM_ID;
     });
 
     function saveDraft() {
@@ -115,8 +120,8 @@ Warm regards,
       console.log("Saving Draft for Item:", ITEM_ID, subject, body);
       alert("Draft saved for Item " + ITEM_ID + " ✅");
 
-      // Close the current tab
-      window.open('', '_self').close();
+      // Close the tab after action
+      window.close();
     }
 
     function sendEmail() {
@@ -126,8 +131,8 @@ Warm regards,
       console.log("Sending Email for Item:", ITEM_ID, subject, body);
       alert("Email sent for Item " + ITEM_ID + " 🚀");
 
-      // Close the current tab
-      window.open('', '_self').close();
+      // Close the tab after action
+      window.close();
     }
   </script>
 </body>
