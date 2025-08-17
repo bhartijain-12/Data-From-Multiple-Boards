@@ -93,10 +93,20 @@ Warm regards,
   <script>
     const API_URL = "https://api.monday.com/v2";
     const API_KEY = "eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjUxODE2ODIyNiwiYWFpIjoxMSwidWlkIjo3NjM1NTU1NCwiaWFkIjoiMjAyNS0wNS0yN1QxMTo1MTozOC4wMDBaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6Mjk2NTAyMjEsInJnbiI6ImFwc2UyIn0.4x5sOTNa8-gYQ9Fb8Lnv8hh2_XQXVYJkhxlfRlUmt0s"; // Replace with your Monday API key
-    const BOARD_ID = 123456789;     // Replace with your board_id
-    const ITEM_ID = 2053389531;     // Replace with your item_id
+    const BOARD_ID = "2046486603";     // Replace with your board_id
+    const ITEM_ID = "2046486604";     // Replace with your item_id
     const COLUMN_ID = "long_text_mktx40xq"; // Replace with your column_id
 
+     // Escape helper
+    function escapeGraphQLString(str) {
+      if (!str) return "";
+      return str
+        .replace(/\\/g, "\\\\")   // escape backslashes
+        .replace(/"/g, '\\"')     // escape double quotes
+        .replace(/\n/g, "\\n")    // escape newlines
+        .replace(/\r/g, "\\r");   // escape carriage returns
+    }
+    
     async function callMondayAPI(query) {
       const response = await fetch(API_URL, {
         method: "POST",
@@ -111,14 +121,14 @@ Warm regards,
 
     async function saveDraft() {
       const body = document.getElementById("email-body").innerText;
-
+      const escapedBody = escapeGraphQLString(body);
       const query = `
         mutation {
           change_simple_column_value (
             board_id: ${BOARD_ID},
             item_id: ${ITEM_ID},
             column_id: "${COLUMN_ID}",
-            value: "${body.replace(/"/g, '\\"')}"
+            value: "${escapedBody}"
           ) {
             id
           }
@@ -133,6 +143,7 @@ Warm regards,
 
     async function sendEmail() {
       const body = document.getElementById("email-body").innerText;
+      const escapedBody = escapeGraphQLString(body);
 
       const query = `
         mutation {
@@ -140,7 +151,7 @@ Warm regards,
             board_id: ${BOARD_ID},
             item_id: ${ITEM_ID},
             column_id: "${COLUMN_ID}",
-            value: "${body.replace(/"/g, '\\"')}"
+            value: "${escapedBody}"
           ) {
             id
           }
