@@ -100,39 +100,65 @@ Warm regards,
   </div>
 
   <script>
-    // Extract itemId from Monday.com board URL
+    // Your Monday API token (⚠️ secure this in backend ideally)
+    const API_TOKEN = "YOUR_MONDAY_API_KEY_HERE";  
+    const COLUMN_ID = "long_text_mktx40xq";  
+
+    // Extract itemId from URL query params
     function getItemIdFromUrl() {
       const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get('itemId') || '(not provided)';
+      return urlParams.get("itemId");
     }
 
     const ITEM_ID = getItemIdFromUrl();
 
-    // Display item_id in the footer
     document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("item-id-display").innerText = ITEM_ID;
+      document.getElementById("item-id-display").innerText = ITEM_ID || "(not found in URL)";
     });
 
-    function saveDraft() {
-      const subject = document.getElementById("email-subject").innerText;
-      const body = document.getElementById("email-body").innerText;
+    async function updateMondayColumn(text) {
+      const query = `
+        mutation {
+          change_simple_column_value (
+            item_id: ${ITEM_ID},
+            column_id: "${COLUMN_ID}",
+            value: "${text.replace(/"/g, '\\"')}"
+          ) {
+            id
+          }
+        }`;
 
-      console.log("Saving Draft for Item:", ITEM_ID, subject, body);
-      alert("Draft saved for Item " + ITEM_ID + " ✅");
+      try {
+        const response = await fetch("https://api.monday.com/v2", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": API_TOKEN
+          },
+          body: JSON.stringify({ query })
+        });
 
-      // Close the tab after action
-      window.close();
+        const result = await response.json();
+        console.log("Monday API Response:", result);
+        return result;
+      } catch (err) {
+        console.error("Error updating Monday column:", err);
+      }
     }
 
-    function sendEmail() {
-      const subject = document.getElementById("email-subject").innerText;
+    async function saveDraft() {
       const body = document.getElementById("email-body").innerText;
+      await updateMondayColumn(body);
+      alert("Draft saved to Monday.com ✅");
+    }
 
-      console.log("Sending Email for Item:", ITEM_ID, subject, body);
-      alert("Email sent for Item " + ITEM_ID + " 🚀");
+    async function sendEmail() {
+      const body = document.getElementById("email-body").innerText;
+      await updateMondayColumn(body);
+      alert("Email sent & saved to Monday.com 🚀");
 
-      // Close the tab after action
-      window.close();
+      // Close the current tab after sending
+      window.open('', '_self').close();
     }
   </script>
 </body>
