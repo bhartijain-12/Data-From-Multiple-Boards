@@ -110,19 +110,30 @@ Warm regards,
       return urlParams.get("itemId");
     }
 
-    //const ITEM_ID = getItemIdFromUrl();
+    // const ITEM_ID = getItemIdFromUrl();
     const ITEM_ID = '2053389531';
     document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("item-id-display").innerText = ITEM_ID || "(not found in URL)";
     });
 
+    // Escape text for GraphQL string
+    function escapeGraphQLString(str) {
+      return str
+        .replace(/\\/g, "\\\\")   // escape backslashes
+        .replace(/"/g, '\\"')     // escape double quotes
+        .replace(/\n/g, "\\n")    // escape newlines
+        .replace(/\r/g, "\\r");   // escape carriage returns
+    }
+
     async function updateMondayColumn(text) {
+      const safeText = escapeGraphQLString(text);
+
       const query = `
         mutation {
           change_simple_column_value (
             item_id: ${ITEM_ID},
             column_id: "${COLUMN_ID}",
-            value: "${text.replace(/"/g, '\\"')}"
+            value: "${safeText}"
           ) {
             id
           }
