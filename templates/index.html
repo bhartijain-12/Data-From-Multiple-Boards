@@ -57,11 +57,6 @@
       background: #28a745;
       color: white;
     }
-    .meta {
-      margin-top: 20px;
-      font-size: 13px;
-      color: #666;
-    }
   </style>
 </head>
 <body>
@@ -93,83 +88,71 @@ Warm regards,
       <button class="save" onclick="saveDraft()">💾 Save as Draft</button>
       <button class="send" onclick="sendEmail()">📨 Send</button>
     </div>
-
-    <div class="meta">
-      <strong>Item ID:</strong> <span id="item-id-display"></span>
-    </div>
   </div>
 
   <script>
-    // Your Monday API token (⚠️ secure this in backend ideally)
-    const API_TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjUxODE2ODIyNiwiYWFpIjoxMSwidWlkIjo3NjM1NTU1NCwiaWFkIjoiMjAyNS0wNS0yN1QxMTo1MTozOC4wMDBaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6Mjk2NTAyMjEsInJnbiI6ImFwc2UyIn0.4x5sOTNa8-gYQ9Fb8Lnv8hh2_XQXVYJkhxlfRlUmt0s";  
-    const COLUMN_ID = "long_text_mktx40xq";  
+    const API_URL = "https://api.monday.com/v2";
+    const API_KEY = "YOUR_API_KEY"; // Replace with your Monday API key
+    const BOARD_ID = 123456789;     // Replace with your board_id
+    const ITEM_ID = 2053389531;     // Replace with your item_id
+    const COLUMN_ID = "long_text_mktx40xq"; // Replace with your column_id
 
-    // Extract itemId from URL query params
-    function getItemIdFromUrl() {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get("itemId");
-    }
-
-    // const ITEM_ID = getItemIdFromUrl();
-    const ITEM_ID = '2053389531';
-    document.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("item-id-display").innerText = ITEM_ID || "(not found in URL)";
-    });
-
-    // Escape text for GraphQL string
-    function escapeGraphQLString(str) {
-      return str
-        .replace(/\\/g, "\\\\")   // escape backslashes
-        .replace(/"/g, '\\"')     // escape double quotes
-        .replace(/\n/g, "\\n")    // escape newlines
-        .replace(/\r/g, "\\r");   // escape carriage returns
-    }
-
-    async function updateMondayColumn(text) {
-      const safeText = escapeGraphQLString(text);
-
-      const query = `
-        mutation {
-          change_simple_column_value (
-            item_id: ${ITEM_ID},
-            column_id: "${COLUMN_ID}",
-            value: "${safeText}"
-          ) {
-            id
-          }
-        }`;
-
-      try {
-        const response = await fetch("https://api.monday.com/v2", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": API_TOKEN
-          },
-          body: JSON.stringify({ query })
-        });
-
-        const result = await response.json();
-        console.log("Monday API Response:", result);
-        return result;
-      } catch (err) {
-        console.error("Error updating Monday column:", err);
-      }
+    async function callMondayAPI(query) {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": API_KEY
+        },
+        body: JSON.stringify({ query })
+      });
+      return response.json();
     }
 
     async function saveDraft() {
       const body = document.getElementById("email-body").innerText;
-      await updateMondayColumn(body);
-      alert("Draft saved to Monday.com ✅");
+
+      const query = `
+        mutation {
+          change_simple_column_value (
+            board_id: ${BOARD_ID},
+            item_id: ${ITEM_ID},
+            column_id: "${COLUMN_ID}",
+            value: "${body.replace(/"/g, '\\"')}"
+          ) {
+            id
+          }
+        }
+      `;
+
+      const result = await callMondayAPI(query);
+      console.log("Save Draft result:", result);
+      alert("Draft saved ✅");
+      window.close();
     }
 
     async function sendEmail() {
       const body = document.getElementById("email-body").innerText;
-      await updateMondayColumn(body);
-      alert("Email sent & saved to Monday.com 🚀");
 
-      // Close the current tab after sending
-      window.open('', '_self').close();
+      const query = `
+        mutation {
+          change_simple_column_value (
+            board_id: ${BOARD_ID},
+            item_id: ${ITEM_ID},
+            column_id: "${COLUMN_ID}",
+            value: "${body.replace(/"/g, '\\"')}"
+          ) {
+            id
+          }
+        }
+      `;
+
+      const result = await callMondayAPI(query);
+      console.log("Send Email result:", result);
+
+      // Here you could also update another column (e.g., "send_to_customer" field)
+      alert("Email sent to customer 🚀");
+      window.close();
     }
   </script>
 </body>
