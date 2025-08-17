@@ -133,11 +133,16 @@ def parse_south_east_and_oceania_region_sales_board_data(board_data):
         # Process each column dynamically based on what's available in the board
         for col_title, col_id in column_title_to_id.items():
             # Skip the 'name' column since we're using item["name"] as "Order_ID"
-            if col_id == 'name' or col_title == 'Product Name' or col_title == 'Status' or col_title == 'Target Date' or col_title == 'Lead Type' or col_title == 'Sales Price' or col_title == 'Selling Price' or col_title == 'Lead Score' or col_title == 'Lead Owner' or col_title == 'Manager':    
-             continue
+            if col_id == 'name' or col_title in [
+                'Product Name', 'Status', 'Target Date', 'Lead Type',
+                'Sales Price', 'Selling Price', 'Lead Score',
+                'Lead Owner', 'Manager', 'Next Steps'
+                ]:
+                continue
 
             value = column_values.get(col_id, None)
-            
+            if not value:
+                continue
             # Use column title as the key in item_data
             item_data[col_title] = value
 
@@ -167,11 +172,16 @@ def parse_europe_sales_board_data(board_data):
         # Process each column dynamically based on what's available in the board
         for col_title, col_id in column_title_to_id.items():
             # Skip the 'name' column since we're using item["name"] as "Order_ID"
-            if col_id == 'name' or col_title == 'Product Name' or col_title == 'Status' or col_title == 'Target Date' or col_title == 'Lead Type' or col_title == 'Sales Price' or col_title == 'Selling Price' or col_title == 'Lead Score' or col_title == 'Lead Owner' or col_title == 'Manager':    
-             continue
+            if col_id == 'name' or col_title in [
+                'Product Name', 'Status', 'Target Date', 'Lead Type',
+                'Sales Price', 'Selling Price', 'Lead Score',
+                'Lead Owner', 'Manager', 'Next Steps'
+                ]:
+                continue
 
             value = column_values.get(col_id, None)
-            
+            if not value:
+                continue
             # Use column title as the key in item_data
             item_data[col_title] = value
 
@@ -201,11 +211,16 @@ def parse_asia_pacific_sales_board_data(board_data):
         # Process each column dynamically based on what's available in the board
         for col_title, col_id in column_title_to_id.items():
             # Skip the 'name' column since we're using item["name"] as "Order_ID"
-            if col_id == 'name' or col_title == 'Product Name' or col_title == 'Status' or col_title == 'Target Date' or col_title == 'Lead Type' or col_title == 'Sales Price' or col_title == 'Selling Price' or col_title == 'Lead Score' or col_title == 'Lead Owner' or col_title == 'Manager':    
-             continue
+            if col_id == 'name' or col_title in [
+                'Product Name', 'Status', 'Target Date', 'Lead Type',
+                'Sales Price', 'Selling Price', 'Lead Score',
+                'Lead Owner', 'Manager', 'Next Steps'
+                ]:
+                continue
 
             value = column_values.get(col_id, None)
-            
+            if not value:
+                continue
             # Use column title as the key in item_data
             item_data[col_title] = value
 
