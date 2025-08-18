@@ -136,7 +136,7 @@ def parse_south_east_and_oceania_region_sales_board_data(board_data):
             if col_id == 'name' or col_title in [
                 'Product Name', 'Status', 'Target Date', 'Lead Type',
                 'Sales Price', 'Selling Price', 'Lead Score',
-                'Lead Owner', 'Manager', 'Next Steps'
+                'Lead Owner', 'Manager', 'Next Steps' ,'AI Email Body', 'Next Action', 'Draft Email Body'
                 ]:
                 continue
 
